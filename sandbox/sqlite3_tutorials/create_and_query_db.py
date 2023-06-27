@@ -95,7 +95,7 @@ def main():
     add_section(subject_id=2, plane='coronal', ordinal=1, url='coronal_21')
     add_section(subject_id=2, plane='sagittal', ordinal=1, url='sagittal_21')
 
-    # examle query; get aonly the macaques older than 14 days; we only want
+    # example query; get aonly the macaques older than 14 days; we only want
     # coronal sections
     query = """
     SELECT section.url as url, subject.id as subject_id
