@@ -99,8 +99,8 @@ def main():
     # coronal sections
     query = """
     SELECT section.url as url, subject.id as subject_id
-    FROM subject
-    JOIN section ON section.subject_id = subject.id
+    FROM section
+    JOIN subject ON section.subject_id = subject.id
     WHERE subject.age_days > 14
     AND subject.species='macaque'
     AND section.plane='coronal'
