@@ -19,11 +19,28 @@ def main():
     for specimen in list_of_specimens:
         print(specimen)
     
-    list_of_specimens.sort()
-    print("new version")
+    # list_of_specimens.sort()
+    # print("new version")
 
-    for specimen in list_of_specimens:
-        print(specimen)
+    # for specimen in list_of_specimens:
+    #     print(specimen)
+
+    # get dict of specimen_ids to Specimen
+    specimen_ids = specimen_metadata(list_of_specimens)
+    for id in specimen_ids:
+        print(specimen_ids[id])
+    
+    # get dict of specimen_ids to list of Specimen children
+    parent_to_child_dict = parent_to_child(list_of_specimens, specimen_ids)
+    for parent in parent_to_child_dict:
+        print(str(parent_to_child_dict[parent]))
+
+    # populates specimens in specimen_ids with children
+    build_tree(specimen_ids, parent_to_child_dict)
+
+    for id in specimen_ids:
+        print(specimen_ids[id])   
+
 
 def build_specimen_list(list_of_dict):
     list_of_specimens = []
@@ -33,17 +50,38 @@ def build_specimen_list(list_of_dict):
     for element in list_of_dict:
         specimen = Specimen(element["specimen_id"], element["specimen_name"], element["donor_id"], element["project_name"], 
                             element["plane_of_section"], element["hemisphere"], element["parent_specimen_id"], element["parent_specimen_name"], 
-                            element["parent_x_coord"],element["parent_y_coord"], element["parent_z_coord"])
+                            element["parent_x_coord"], element["parent_y_coord"], element["parent_z_coord"])
         
         list_of_specimens.append(specimen)
     
     return list_of_specimens
 
-# def build_tree(list_of_specimens):
-#     #root will always be first element in list bc was at top of csv 
-#     root = list_of_specimens.pop(0)
+#create dictionary of specimen_id keys to Specimen values
+def specimen_metadata(list_of_specimens):
+    specimen_ids = {}
 
-#     if list_of_specimens[0].parent_specimen_id == 
+    for specimen in list_of_specimens:
+        id = specimen.specimen_id
+        specimen_ids.update({id: specimen})
+
+    return specimen_ids
+
+# maps specimen_ids to a list of Specimen children
+# if a specimen doesn't have kids it will map to an empty list
+def parent_to_child(list_of_specimens, specimen_ids):
+    #creates dictionary where keys are all of the specimen_ids
+    parent_to_child_dict = {key: [] for key in specimen_ids.keys()}
+
+    for specimen in list_of_specimens:
+        parent_id = specimen.parent_specimen_id
+        if parent_id != '':
+            parent_to_child_dict[parent_id].append(specimen)
+
+    return parent_to_child_dict
+
+def build_tree(specimen_ids, parent_to_child):
+    for parent in parent_to_child:  
+        specimen_ids[parent].children = parent_to_child[parent]
 
 main()
 
