@@ -15,11 +15,17 @@ def main():
         dict_reader = DictReader(csv_file)
         list_of_dict = list(dict_reader)
     
-    list_of_specimens = build_tree(list_of_dict)
+    list_of_specimens = build_specimen_list(list_of_dict)
+    for specimen in list_of_specimens:
+        print(specimen)
+    
+    list_of_specimens.sort()
+    print("new version")
+
     for specimen in list_of_specimens:
         print(specimen)
 
-def build_tree(list_of_dict):
+def build_specimen_list(list_of_dict):
     list_of_specimens = []
 
     #makes list of specimens with given info
@@ -33,6 +39,11 @@ def build_tree(list_of_dict):
     
     return list_of_specimens
 
+# def build_tree(list_of_specimens):
+#     #root will always be first element in list bc was at top of csv 
+#     root = list_of_specimens.pop(0)
+
+#     if list_of_specimens[0].parent_specimen_id == 
 
 main()
 
