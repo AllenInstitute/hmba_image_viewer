@@ -18,10 +18,15 @@ class Specimen:
     
     #adds a node to list of children 
     def add_child(self, child):
-        self.nodes.append(child)
+        self.children.append(child)
 
     def __str__(self):
-        return "specimen_id: " + self.specimen_id + "\t" + "parent_id: " + self.parent_specimen_id
+        representation = "specimen_name: " + self.specimen_name + "\t" + "specimen_id: " + self.specimen_id + "\t" + "parent_id: " + self.parent_specimen_id + "\n" + "Children: "
+
+        for child in self.children:
+            representation += str(child.specimen_name) + ", "
+
+        return representation
     
     def __eq__(self, other):
         if isinstance(other, Specimen):
@@ -43,7 +48,7 @@ class Specimen:
                 
                 if (self_suffix != "CX" != 0) and (other_suffix != "CX" != 0):
                     return int(self_suffix) < int(other_suffix)
-                elif self_suffix != "CX" and other_suffix == "CX":
+                elif (self_suffix != "CX") and (other_suffix == "CX"):
                     return True
                         
         return False
