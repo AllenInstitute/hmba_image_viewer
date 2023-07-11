@@ -26,7 +26,8 @@ class Specimen:
         for child in self.children:
             representation += str(child.specimen_name) + ", "
 
-        return representation
+        # get rid of extra comma
+        return representation[:len(representation) - 2]
     
     def __eq__(self, other):
         if isinstance(other, Specimen):

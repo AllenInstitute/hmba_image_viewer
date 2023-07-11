@@ -39,10 +39,10 @@ def main():
 ''' % donor_name
 
     res = pd.read_sql_query(query,con=engine,dtype={'parent_specimen_id':'Int64',
-                                                    'parent_x_coord':'Int16',
-                                                    'parent_y_coord':'Int16',
-                                                    'parent_z_coord':'Int16',})
-
+                                                    'parent_x_coord':'Int32',
+                                                    'parent_y_coord':'Int32',
+                                                    'parent_z_coord':'Int32',})
+    
     res.to_csv('donor.csv')
 
     with open("donor.csv", 'r') as csv_file:
