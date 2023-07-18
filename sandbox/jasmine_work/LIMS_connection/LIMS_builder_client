@@ -64,6 +64,8 @@ def main():
     for id in specimen_ids:
         print(specimen_ids[id])   
 
+    engine.dispose()
+
 
 def build_specimen_list(list_of_dict):
     list_of_specimens = []
