@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+Donor Specimen List
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+  <div class="row pb-5">
+    <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+
+      <h1 class="pt-5 pb-2">Donor Specimens</h1>
+
+      <p class="lead alert alert-warning">This is a list of all the specimens of the
+			<strong>{{ donor_id }}</strong> donor ID.</p>
+
+		<table class="table">
+			<tr>
+				<th>Specimen name</th>
+				<th>Specimen ID</th>
+				<th>Parent ID</th>
+			</tr>
+
+			<!-- here is a for-loop to give us all the socks -->
+			{% for specimen in specimens %}
+			<tr>
+				<td>{{ specimen.name }}</td>
+				<td>{{ specimen.id }}</td>
+				<td>{{ specimen.parent_id }}</td>
+			</tr>
+			{% endfor %}
+		</table>
+
+		</div>
+	</div>
+</div>
+
+{% endblock %}

@@ -72,6 +72,8 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import text
 from sqlalchemy import create_engine
 from sqlalchemy.ext.automap import automap_base
+from flask import render_template
+from flask_bootstrap import Bootstrap
 
 # this variable, db, will be used for all SQLAlchemy commands
 db = SQLAlchemy()
@@ -97,9 +99,6 @@ db.init_app(app)
 #         error_text = "<p>The error:<br>" + str(e) + "</p>"
 #         hed = '<h1>Something is broken.</h1>'
 #         return hed + error_text
-
-if __name__ == '__main__':
-    app.run(debug=True)
 
 class Specimen(db.Model):
     __tablename__ = 'specimens'
@@ -188,21 +187,11 @@ class Specimen(db.Model):
 #     donors_genotypes = db.Column(db.String)
 #     water_restricted = db.Column(db.String)
 
-@app.route('/')
-def index():
-    try:
-        specimens = db.session.execute(db.select(Specimen).filter_by(donor_id='1082751941')).scalars()
-
-        specimen_text = '<ul>'
-        for specimen in specimens:
-            specimen_text += '<li>' + str(specimen.name) + ", " + str(specimen.id) + '</li>'
-        specimen_text += '</ul>'
-        return specimen_text
-    except Exception as e:
-        # e holds description of the error
-        error_text = "<p>The error:<br>" + str(e) + "</p>"
-        hed = '<h1>Something is broken.</h1>'
-        return hed + error_text
+@app.route('/specimens/<donor_id>/')
+def specimens(donor_id):
+    specimens = db.session.execute(db.select(Specimen)
+            .filter_by(donor_id=donor_id)).scalars()
+    return render_template('list.html', donor_id=donor_id, specimens=specimens)
 
 if __name__ == '__main__':
     app.run(debug=True)
