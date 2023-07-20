@@ -18,7 +18,7 @@ def main():
     hello = 1
     # for table_name in Base.classes.keys():
     #     print(table_name)
-    for column in inspector.get_columns("specimens"):
+    for column in inspector.get_columns("donors"):
         print(str(hello) + ". " + column['name'] + " type: " + str(type(column['name'])))
         hello = hello + 1
 
