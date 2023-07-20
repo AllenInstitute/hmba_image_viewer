@@ -120,15 +120,14 @@ class DonorForm(FlaskForm):
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    donors = db.session.execute(db.select(Donor)
-        .filter_by(id="1082752228").distinct())
-    
-    form = DonorForm()
+    donors = Donor.query.all()
     message = ""
+
+    form = DonorForm()
     if form.validate_on_submit():
-        donor = form.donor.data
-        if donor.lower() in donors:
-            donor_id = donor
+        donor_id = form.donor.data
+        donor = Donor.query.filter_by(id = donor_id)
+        if donor is not None:
             form.donor.data = ""
             return redirect(url_for('specimens', donor_id=donor_id))
         else:
