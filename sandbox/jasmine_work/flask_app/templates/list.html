@@ -17,7 +17,7 @@ Donor Specimen List
       <p class="lead alert alert-warning">This is a list of all the specimens of donor ID
 			<strong>{{ donor_id }}</strong></p>
 
-        <p class="ml-4"><a href="{{ url_for('home') }}">Return to home.</a></p>
+		<p class="ml-4"><a href="{{ url_for('home') }}">Return to home.</a></p>
 
 
 			<table class="table">
@@ -25,6 +25,7 @@ Donor Specimen List
 					<th>Specimen name</th>
 					<th>Specimen ID</th>
 					<th>Parent ID</th>
+					<th>Children</th>
 				</tr>
 
 				<!-- here is a for-loop to give us all the socks -->
@@ -33,6 +34,7 @@ Donor Specimen List
 					<td>{{ specimen.name }}</td>
 					<td>{{ specimen.id }}</td>
 					<td>{{ specimen.parent_id }}</td>
+					<td>{{specimen.children}}</td>
 				</tr>
 				{% endfor %}
 			</table>

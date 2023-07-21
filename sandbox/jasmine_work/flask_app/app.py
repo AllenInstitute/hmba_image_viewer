@@ -34,7 +34,6 @@ class Specimen(db.Model):
     created_at = db.Column(db.String)
     updated_by = db.Column(db.String)
     updated_at = db.Column(db.String)
-    parent_id = db.Column(db.String)
     structure_id = db.Column(db.String)
     postmortem_interval_id = db.Column(db.String)
     preparation_method_id = db.Column(db.String)
@@ -83,6 +82,7 @@ class Specimen(db.Model):
     sectioning_task_id = db.Column(db.String)
     merscope_experiment_id = db.Column(db.String)
     oligo_tag = db.Column(db.String)
+    parent_id = db.Column(db.String)
 
 class Donor(db.Model):
     __tablename__ = "donors"
@@ -114,32 +114,124 @@ class Donor(db.Model):
     occupation_id = db.Column(db.String)
     water_restricted = db.Column(db.String)
 
+# class Parent(db.Model):
+#     __tablename__ = 'parents'
+#     id = db.Column(db.String)
+#     name = db.Column(db.String, primary_key = True)
+#     plane_of_section_id = db.Column(db.String)
+#     hemisphere_id = db.Column(db.String)
+#     parent_x_coord = db.Column(db.String)
+#     parent_y_coord = db.Column(db.String)
+#     parent_z_coord = db.Column(db.String)
+#     project_id = db.Column(db.String)
+#     donor_id = db.Column(db.String) 
+#     parent_id = db.Column(db.String)
+
+#     # not already given in Specimen class
+#     children = db.relationship('Specimen', backref = 'parents', lazy=True)
+
 class DonorForm(FlaskForm):
     donor = StringField('What is the donor ID of the specimens you would like to see?', validators=[DataRequired(), Length(10, 40)])
     submit = SubmitField('Submit')
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    # gets table of all donors in LIMS
     donors = Donor.query.all()
     message = ""
 
     form = DonorForm()
     if form.validate_on_submit():
         donor_id = form.donor.data
-        donor = Donor.query.filter_by(id = donor_id)
+
+        # gets the donor that matches the requested donor id
+        donor = Donor.query.filter_by(id = donor_id).first()
         if donor is not None:
             form.donor.data = ""
+
+            # goes to appropriate specimen page based on donor id 
+            # calls specimen method
             return redirect(url_for('specimens', donor_id=donor_id))
         else:
             message = "That donor is not in our database"
     return render_template('home.html',donors=donors, form=form, message=message)
     
+
+
 @app.route('/specimens/<donor_id>/')
 def specimens(donor_id):
+
+    # parents = db.Table('parents',
+    #     db.Column('specimen_id', db.String, db.ForeignKey('specimens.id'), primary_key=True),
+    #     db.Column('specimen_name', db.String, db.ForeignKey('specimens.name'), primary_key=True),
+    #     db.Column('specimen_plane_id', db.String, db.ForeignKey('specimens.plane_of_section_id')),
+    #     db.Column('specimen_hemisphere_id', db.String, db.ForeignKey('specimens.hemisphere_id')),
+    #     db.Column('specimen_parent_x_coord', db.String, db.ForeignKey('specimens.parent_x_coord')),
+    #     db.Column('specimen_parent_y_coord', db.String, db.ForeignKey('specimens.parent_y_coord')),
+    #     db.Column('specimen_parent_z_coord', db.String, db.ForeignKey('specimens.parent_z_coord')),
+    #     db.Column('specimen_project_id', db.String, db.ForeignKey('specimens.project_id')),
+    #     db.Column('specimen_donor_id', db.String, db.ForeignKey('specimens.donor_id')),
+    #     db.Column('specimen_parent_id', db.String, db.ForeignKey('specimens.parent_id')),
+    #     db.Column('specimen_children', db.String, db.ForeignKey('specimens.')))
+
+    # get table of specimens matching given donor id (has all columns!)
     specimens = db.session.execute(db.select(Specimen)
             .filter_by(donor_id=donor_id)
             .order_by(Specimen.name)).scalars()
-    return render_template('list.html', donor_id=donor_id, specimens=specimens)
+
+    relationships = build_relationship(specimens)
+
+    specimens = db.session.execute(db.select(Specimen)
+            .filter_by(donor_id=donor_id)
+            .order_by(Specimen.name)).scalars()
+    
+    combined_data = combine_data(specimens, relationships)
+    
+    # renders template that displays all specimens in table with their id and parent id
+    return render_template('list.html', donor_id=donor_id, specimens=combined_data)
+
+# specimens = table of all specimens with given donor_id
+# maps specimen ids to children
+def build_relationship(specimens):
+    relationships = {}
+
+    for specimen in specimens:
+        parent_id = specimen.parent_id 
+        if parent_id != '':
+            if parent_id not in relationships:
+                relationships[parent_id] = []
+        relationships[parent_id].append(specimen.id)
+    
+    return relationships
+    
+# specimens = table of all specimens with given donor_id
+# relationships = dictionary mapping specimen_id to children
+# creates dictionary of specimen metadata including their children
+def combine_data(specimens, relationships):
+    combined_data = []
+
+    for specimen in specimens:
+
+        specimen_data = {
+            'id': specimen.id,
+            'name': specimen.name, 
+            'plane_of_section_id': specimen.plane_of_section_id,
+            'hemisphere_id': specimen.hemisphere_id, 
+            'parent_x_coord': specimen.parent_x_coord, 
+            'parent_y_coord': specimen.parent_y_coord,             
+            'parent_z_coord': specimen.parent_z_coord, 
+            'project_id': specimen.project_id, 
+            'donor_id': specimen.donor_id, 
+            'parent_id': specimen.parent_id,
+        }
+        if specimen.id in relationships:
+            specimen_data['children'] = relationships[specimen.id]
+
+        combined_data.append(specimen_data)
+
+    return combined_data
+
 
 if __name__ == '__main__':
+    db.create_all()
     app.run(debug=True)
