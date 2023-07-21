@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+Donor Specimen List
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row pb-5">
+        <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+            <h1 class="pt-5 pb-2">Donor Specimens</h1>
+            <form>
+                <select id="tree-dropdown">
+                    <option value="">-- Select a node --</option>
+                    {% for node in data %}
+                        {% if node.parent_id is none %}
+                            <option value="{{ node.id }}">{{ node.name }}</option>
+                            {% set node_id = node.id %}
+                            {% for subnode in data %}
+                                {% if subnode.parent_id == node_id %}
+                                    <option value="{{ subnode.id }}">--- {{ subnode.name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}
