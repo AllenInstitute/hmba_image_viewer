@@ -14,9 +14,15 @@ Donor Specimen List
             <!-- <form>
                 <select id="tree-dropdown">
                     <option value="">-- Select a node --</option>
-                    {% for node in data recursive%}
+                    {% for node in data %}
                         {% if node.parent_id is none %}
-                            {{ loop(node) }}
+                            <option value="{{ node.id }}">{{ node.name }}</option>
+                            {% set node_id = node.id %}
+                            {% for subnode in data %}
+                                {% if subnode.parent_id == node_id %}
+                                    <option value="{{ subnode.id }}">--- {{ subnode.name }}</option>
+                                {% endif %}
+                            {% endfor %}
                         {% endif %}
                     {% endfor %}
                 </select>
@@ -43,31 +49,35 @@ Donor Specimen List
                     {% endfor %}
                 </ul> -->
 
-                <!-- <ul>
-                    {% macro render_tree(data) %}
-                        {% for item in data recursive %}
-                            <li>{{ item.name }}
-                                {% if item.children %}
-                                    <ul>
-                                        {{ loop(item.children) }}
-                                    </ul>
+                <!-- {% macro render_tree(children) %}
+                    <ul>
+                        {% for child in children %}
+                            <li>{{ child.name }}
+                                {% if child.children %}
+                                    {{ render_tree(child.children) }}
                                 {% endif %}
                             </li>
                         {% endfor %}
-                    {% endmacro %}
-                    {{ render_tree(data) }}
+                    </ul>
+                {% endmacro %}
+                    
+                <ul>
+                    <li>{{ data.name }}</li>
+                    {{ render_tree(data.children) }}
                 </ul>
                  -->
-                <form>
+
+
+                <!-- <form>
                     <select id="tree-dropdown">
                         <option value="">-- Select a node --</option>
 
                         {% macro render_tree(data, level) %}
                             {% for node in data recursive %}
-                                <!-- hello = ''
+                                hello = ''
                                 {% for x in range(level) %}
                                     hello += '--- '
-                                {% endfor %} -->
+                                {% endfor %}
 
                                 <option value="{{ node.name }}">{{ level * '--- ' }}{{ node.name }}</option>
                                 {% if node.children %}
@@ -78,7 +88,7 @@ Donor Specimen List
 
                         {{ render_tree(data, 0) }}
                     </select>
-                </form>
+                </form> -->
         </div>
     </div>
 </div>

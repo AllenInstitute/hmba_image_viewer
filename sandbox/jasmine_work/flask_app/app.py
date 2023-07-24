@@ -159,8 +159,12 @@ def specimens(donor_id):
     combined_data = combine_data(specimens, relationships)
     # tree = build_tree(combined_data, None)
 
+    flat_data = flatten_tree(combined_data)
+    for data in flat_data:
+        print(data['name'])
+
     # renders template that displays all specimens in table with their id and parent id
-    return render_template('dropdown.html', data=combined_data)
+    return render_template('drop_down_test.html', flat_data=flat_data)
 
 # specimens = table of all specimens with given donor_id
 # maps specimen ids to children
@@ -173,6 +177,11 @@ def build_relationship(specimens):
             if parent_id not in relationships:
                 relationships[parent_id] = []
         relationships[parent_id].append(specimen.id)
+
+    # for key, value in relationships.items():
+    #     print(f"{key}: {value}")
+    
+    # print(relationships[None])
     
     return relationships
     
@@ -202,6 +211,16 @@ def combine_data(specimens, relationships):
         combined_data.append(specimen_data)
 
     return combined_data
+
+def flatten_tree(data, parent_id=None, prefix=''):
+    flat_list = []
+    for node in data:
+        if node['parent_id'] == parent_id:
+            node['name'] = prefix + node['name']
+            flat_list.append(node)
+            flat_list += flatten_tree(data, node['id'], prefix + '--- ')
+    return flat_list
+
 
 # def build_tree(combined_data, parent=None):
 #     children =[]
