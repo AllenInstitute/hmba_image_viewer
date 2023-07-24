@@ -64,14 +64,19 @@ Donor Specimen List
 
                         {% macro render_tree(data, level) %}
                             {% for node in data recursive %}
-                                <option value="{{ node.id }}">{{ level * '--- ' }}{{ node.name }}</option>
+                                <!-- hello = ''
+                                {% for x in range(level) %}
+                                    hello += '--- '
+                                {% endfor %} -->
+
+                                <option value="{{ node.name }}">{{ level * '--- ' }}{{ node.name }}</option>
                                 {% if node.children %}
-                                    level = level + 1
-                                    {{ loop(node.children, level) }}
+                                    {{ render_tree(node.children, level + 1) }}
                                 {% endif %}
                             {% endfor %}
                         {% endmacro %}
-                        {{render_tree(data, 0)}}
+
+                        {{ render_tree(data, 0) }}
                     </select>
                 </form>
         </div>
