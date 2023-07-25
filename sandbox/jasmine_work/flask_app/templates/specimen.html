@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+
+{% block title %}
+Donor Specimen List
+{% endblock %}
+
+
+{% block content %}
+
+<div class="container">
+  <div class="row pb-5">
+    <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+<!-- 
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+
+        <h1 class="pt-5 pb-2">Specimen Information</h1>
+
+        <p class="lead alert alert-warning">This is all of the metadata associated with specimen: 
+			<strong>TBD</strong></p>
+
+	    <p class="ml-4"><a href="{{ url_for('home') }}">Return to home.</a></p>
+
+        <!-- <img src="{{ image_url }}" alt="Specimen image"> -->
+
+		</div>
+	</div>
+</div>
+
+{% endblock %}

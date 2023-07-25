@@ -4,7 +4,7 @@ from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Length
-import secrets
+import secrets, base64
 
 
 # this variable, db, will be used for all SQLAlchemy commands
@@ -42,7 +42,7 @@ class Specimen(db.Model):
     parent_z_coord = db.Column(db.String)
     barcode = db.Column(db.String)
     location_id = db.Column(db.String)
-    storage_directory = db.Column(db  .String)
+    storage_directory = db.Column(db.String)
     project_id = db.Column(db.String)
     specimen_preparation_method_id = db.Column(db.String)
     alignment3d_id = db.Column(db.String)
@@ -118,6 +118,28 @@ class DonorForm(FlaskForm):
     donor = StringField('What is the donor ID of the specimens you would like to see?', validators=[DataRequired(), Length(10, 40)])
     submit = SubmitField('Submit')
 
+class Image(db.Model):
+    __tablename__ = 'images'
+    id = db.Column(db.String, primary_key = True)
+    jp2 = db.Column(db.String)
+    zoom = db.Column(db.String)
+    created_at = db.Column(db.String)
+    updated_at = db.Column(db.String)
+    qc_date = db.Column(db.String)
+    slide_id = db.Column(db.String)
+    width = db.Column(db.String)
+    height = db.Column(db.String)
+    image_type_id = db.Column(db.String)
+    parent_id = db.Column(db.String)
+    position = db.Column(db.String)
+    specimen_id = db.Column(db.String)
+    jp2_md5sum = db.Column(db.String)
+    flip_id = db.Column(db.String)
+    zoom_tiers = db.Column(db.String)
+    archive_dir = db.Column(db.String)
+    zoom_archive_dir = db.Column(db.String)
+    treatment_id = db.Column(db.String)
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     # gets table of all donors in LIMS
@@ -157,11 +179,9 @@ def specimens(donor_id):
             .order_by(Specimen.name)).scalars()
     
     combined_data = combine_data(specimens, relationships)
-    # tree = build_tree(combined_data, None)
 
+    # manually adds dashes to each specimen name so dropdown display has the hierarchy
     flat_data = flatten_tree(combined_data)
-    for data in flat_data:
-        print(data['name'])
 
     # renders template that displays all specimens in table with their id and parent id
     return render_template('drop_down_test.html', flat_data=flat_data)
@@ -177,11 +197,6 @@ def build_relationship(specimens):
             if parent_id not in relationships:
                 relationships[parent_id] = []
         relationships[parent_id].append(specimen.id)
-
-    # for key, value in relationships.items():
-    #     print(f"{key}: {value}")
-    
-    # print(relationships[None])
     
     return relationships
     
@@ -221,17 +236,14 @@ def flatten_tree(data, parent_id=None, prefix=''):
             flat_list += flatten_tree(data, node['id'], prefix + '--- ')
     return flat_list
 
+@app.route('/specimen-info/<specimen_id>/')
+def display_specimen(specimen_id):
+    # gets the image from the database based on specimen id
+    specimen = Specimen.query.filter_by(id=specimen_id).first()
+    print(specimen.storage_directory)
 
-# def build_tree(combined_data, parent=None):
-#     children =[]
+    return render_template('specimen.html')
 
-#     for specimen in combined_data:
-#         if specimen.get('parent_id') == parent.id:
-#             children = build_tree(combined_data, specimen["id"])
-#             if children:
-#                 specimen["children"] = children
-#             tree.append(specimen)
-#     return tree
 
 if __name__ == '__main__':
     db.create_all()
