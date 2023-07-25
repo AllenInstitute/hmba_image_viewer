@@ -20,4 +20,14 @@ Donor Specimen List
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('tree-dropdown').addEventListener('change', function() {
+        if (this.value !== '') {
+            window.location.href = "/specimen-info/" + this.value;
+        }
+    });
+</script>
+
+
 {% endblock %}

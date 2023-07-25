@@ -170,23 +170,17 @@ def home():
 def specimens(donor_id):
 
     # get table of specimens matching given donor id (has all columns!)
-    specimens = db.session.execute(db.select(Specimen)
-            .filter_by(donor_id=donor_id)
-            .order_by(Specimen.name)).scalars()
+    specimens = Specimen.query.filter_by(donor_id=donor_id).order_by(Specimen.name)
 
     relationships = build_relationship(specimens)
 
-    specimens = db.session.execute(db.select(Specimen)
-            .filter_by(donor_id=donor_id)
-            .order_by(Specimen.name)).scalars()
-    
     combined_data = combine_data(specimens, relationships)
 
     # manually adds dashes to each specimen name so dropdown display has the hierarchy
     flat_data = flatten_tree(combined_data)
 
     # renders template that displays all specimens in table with their id and parent id
-    return render_template('drop_down_test.html', flat_data=flat_data)
+    return render_template('drop_down_test.html', flat_data=flat_data, combined_data=combined_data)
 
 # specimens = table of all specimens with given donor_id
 # maps specimen ids to children
@@ -251,8 +245,24 @@ def display_specimen(specimen_id):
     # image = Image.query.filter_by(specimen_id=specimen_id).first()
     # print(image.jp2)
 
+    # combined_data = request.args.get('combined_data', None)
+
+    # specimen = find_specimen(specimen_id, combined_data)
+    # if specimen.parent_id is not None:
+    #     parent_name = Specimen.query.filter_by(id=specimen.parent_id).first().name
+
     return render_template('specimen.html', name = specimen.name, specimen = specimen, parent_name = parent_name)
 
+def find_specimen(specimen_id, combined_data):
+    desired_specimen = {}
+
+    for specimen in combined_data:
+        if specimen['id'] == specimen_id:
+            desired_specimen = specimen
+            break
+
+
+    return desired_specimen
 
 if __name__ == '__main__':
     db.create_all()

@@ -104,3 +104,109 @@ Donor Specimen List
 
 
 {% endblock %}
+{% extends 'base.html' %}
+
+
+{% block title %}
+Donor Specimen List
+{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <div class="row pb-5">
+        <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+            <h1 class="pt-5 pb-2">Donor Specimens</h1>
+            <!-- <form>
+                <select id="tree-dropdown">
+                    <option value="">-- Select a node --</option>
+                    {% for node in data %}
+                        {% if node.parent_id is none %}
+                            <option value="{{ node.id }}">{{ node.name }}</option>
+                            {% set node_id = node.id %}
+                            {% for subnode in data %}
+                                {% if subnode.parent_id == node_id %}
+                                    <option value="{{ subnode.id }}">--- {{ subnode.name }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            </form> -->
+                <!-- <ul>
+                    {% for item in data %}
+                        <li>{{ item.name }}
+                            {% if item.children %}
+                                <ul>
+                                    {% for child in item.children %}
+                                        <li>{{ child.name }}
+                                            {% if child.children %}
+                                                <ul>
+                                                    {% for grandchild in child.children %}
+                                                        <li>{{ grandchild.name }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul> -->
+
+                <!-- {% macro render_tree(children) %}
+                    <ul>
+                        {% for child in children %}
+                            <li>{{ child.name }}
+                                {% if child.children %}
+                                    {{ render_tree(child.children) }}
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endmacro %}
+                    
+                <ul>
+                    <li>{{ data.name }}</li>
+                    {{ render_tree(data.children) }}
+                </ul>
+                 -->
+
+
+                <!-- <form>
+                    <select id="tree-dropdown">
+                        <option value="">-- Select a node --</option>
+
+                        {% macro render_tree(data, level) %}
+                            {% for node in data recursive %}
+                                hello = ''
+                                {% for x in range(level) %}
+                                    hello += '--- '
+                                {% endfor %}
+
+                                <option value="{{ node.name }}">{{ level * '--- ' }}{{ node.name }}</option>
+                                {% if node.children %}
+                                    {{ render_tree(node.children, level + 1) }}
+                                {% endif %}
+                            {% endfor %}
+                        {% endmacro %}
+
+                        {{ render_tree(data, 0) }}
+                    </select>
+                </form> -->
+        </div>
+    </div>
+</div>
+
+<!-- {% macro loop(node, level) %}
+    <option value="{{ node.name }}">{{ level * '--- ' }}{{ node.name }}</option>
+    {% if node.children is not none %}
+        {% for child_node in node.children %}
+            {{ loop(node=child_node, level=level + 1) }}
+        {% endfor %}
+    {% endif %}
+{% endmacro %} -->
+
+
+{% endblock %}
