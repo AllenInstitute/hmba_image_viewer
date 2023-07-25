@@ -238,11 +238,11 @@ def flatten_tree(data, parent_id=None, prefix=''):
 
 @app.route('/specimen-info/<specimen_id>/')
 def display_specimen(specimen_id):
-    # gets the image from the database based on specimen id
+    # gets the specimen from the database based on specimen id
     specimen = Specimen.query.filter_by(id=specimen_id).first()
-    print(specimen.storage_directory)
+    parent_name = Specimen.query.filter_by(id=specimen.parent_id).first().name
 
-    return render_template('specimen.html')
+    return render_template('specimen.html', name = specimen.name, specimen = specimen, parent_name = parent_name)
 
 
 if __name__ == '__main__':
