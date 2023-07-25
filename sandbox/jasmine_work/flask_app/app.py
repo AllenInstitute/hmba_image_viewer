@@ -115,7 +115,7 @@ class Donor(db.Model):
     water_restricted = db.Column(db.String)
 
 class DonorForm(FlaskForm):
-    donor = StringField('What is the donor ID of the specimens you would like to see?', validators=[DataRequired(), Length(10, 40)])
+    donor = StringField('What is the name of the donor you would like to see?', validators=[DataRequired(), Length(10, 40)])
     submit = SubmitField('Submit')
 
 class Image(db.Model):
@@ -148,12 +148,14 @@ def home():
 
     form = DonorForm()
     if form.validate_on_submit():
-        donor_id = form.donor.data
+        donor_name = form.donor.data
 
         # gets the donor that matches the requested donor id
-        donor = Donor.query.filter_by(id = donor_id).first()
+        donor = Donor.query.filter_by(name = donor_name).first()
         if donor is not None:
             form.donor.data = ""
+
+            donor_id = donor.id
 
             # goes to appropriate specimen page based on donor id 
             # calls specimen method
@@ -240,7 +242,14 @@ def flatten_tree(data, parent_id=None, prefix=''):
 def display_specimen(specimen_id):
     # gets the specimen from the database based on specimen id
     specimen = Specimen.query.filter_by(id=specimen_id).first()
-    parent_name = Specimen.query.filter_by(id=specimen.parent_id).first().name
+
+    parent_name = "None"
+    if specimen.parent_id is not None: 
+        parent_name = Specimen.query.filter_by(id=specimen.parent_id).first().name
+
+    # tried to get image file name but image is not in lims either
+    # image = Image.query.filter_by(specimen_id=specimen_id).first()
+    # print(image.jp2)
 
     return render_template('specimen.html', name = specimen.name, specimen = specimen, parent_name = parent_name)
 
