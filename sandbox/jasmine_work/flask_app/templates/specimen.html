@@ -29,48 +29,57 @@ Donor Specimen List
             <table class="table">
                 <tr>
                     <th>Specimen name</th>
-                    <td>{{ specimen.name }}</td>
+                    <td>{{ specimen_data.name }}</td>
                 </tr>
                 <tr>
                     <th>Specimen ID</th>
-                    <td>{{ specimen.id }}</td>
+                    <td>{{ specimen_data.id }}</td>
                 </tr>
                 <tr>
                     <th>Parent Name</th>
-                    <td>{{ parent_name }}</td>
+                    <td>{{ specimen_data.parent_name }}</td>
                 </tr>
                 <tr>
                     <th>Parent ID</th>
-                    <td>{{ specimen.parent_id }}</td>
+                    <td>{{ specimen_data.parent_id }}</td>
                 </tr>
                 <tr>
                     <th>Donor ID</th>
-                    <td>{{ specimen.donor_id }}</td>
+                    <td>{{ specimen_data.donor_id }}</td>
                 </tr>
                 <tr>
                     <th>Project Name</th>
-                    <td>{{ specimen.project_name }}</td>
+                    <td>{{ specimen_data.project_name }}</td>
+                </tr>
+                <tr>
+                    <th>Specimen Type</th>
+                    <td>{{ specimen_data.specimen_type }}</td>
                 </tr>
                 <tr>
                     <th>Plane of Section</th>
-                    <td>{{ specimen.plane_of_section_id }}</td>
+                    <td>{{ specimen_data.plane_of_section }}</td>
                 </tr>
                 <tr>
-                    <th>Parent x coord</th>
-                    <td>{{ specimen.parent_x_coord }}</td>
+                    <th>Hemisphere</th>
+                    <td>{{ specimen_data.hemisphere }}</td>
                 </tr>
                 <tr>
-                    <th>Parent y coord</th>
-                    <td>{{ specimen.parent_y_coord }}</td>
+                    <th>Structure</th>
+                    <td>{{ specimen_data.structure }}</td>
                 </tr>
                 <tr>
-                    <th>Parent z coord</th>
-                    <td>{{ specimen.parent_z_coord }}</td>
+                    <th>Organism</th>
+                    <td>{{ specimen_data.organism }}</td>
                 </tr>
                 <tr>
-                    <th>Children</th>
-                    <td>{{ specimen.children }}</td>
+                    <th>Age</th>
+                    <td>{{ specimen_data.age }}</td>
                 </tr>
+                <tr>
+                    <th>Image Type</th>
+                    <td>{{ specimen_data.image_type }}</td>
+                </tr>
+
             </table>
 
         </table>

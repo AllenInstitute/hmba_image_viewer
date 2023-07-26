@@ -162,6 +162,67 @@ class ImageTypes(db.Model):
     updated_at = db.Column(db.String)
     reuploadable = db.Column(db.String)
 
+class Hemisphere(db.Model):
+    __tablename__ = 'hemispheres'
+    id = db.Column(db.String, primary_key = True)
+    name = db.Column(db.String) 
+    created_at = db.Column(db.String)
+    updated_at = db.Column(db.String)
+    symbol = db.Column(db.String)
+
+class Project(db.Model):
+    __tablename__ = 'projects'
+    id = db.Column(db.String, primary_key = True)
+    name = db.Column(db.String) 
+    created_at = db.Column(db.String)
+    updated_at = db.Column(db.String)
+    file_storage = db.Column(db.String)
+    subdirectory_count = db.Column(db.String)
+    current_directory = db.Column(db.String)
+    trigger_dir = db.Column(db.String)
+    failed_trigger_dir = db.Column(db.String)
+    process_triggers = db.Column(db.String)
+    incoming_directory = db.Column(db.String)
+    non_cached_schema_name = db.Column(db.String)
+    digital_archive_id = db.Column(db.String)
+
+class Structure(db.Model):
+    __tablename__ = 'structures'
+    id = db.Column(db.String, primary_key = True)
+    atlas_id = db.Column(db.String)
+    name = db.Column(db.String)
+    acronym = db.Column(db.String)
+    red = db.Column(db.String)
+    green = db.Column(db.String)
+    blue = db.Column(db.String)
+    st_order = db.Column(db.String)
+    st_level = db.Column(db.String)
+    ontology_id = db.Column(db.String)
+    hemisphere_id = db.Column(db.String)
+    sibling_order = db.Column(db.String)
+    created_at = db.Column(db.String)
+    updated_at = db.Column(db.String)
+
+class Age(db.Model):
+    __tablename__ = 'ages'
+    id = db.Column(db.String, primary_key = True)
+    name = db.Column(db.String)
+    description = db.Column(db.String)
+    organism_id = db.Column(db.String)
+    created_at = db.Column(db.String)
+    updated_at = db.Column(db.String)
+    days = db.Column(db.String)
+    isembryonic = db.Column(db.String)
+
+class Organism(db.Model):
+    __tablename__ = 'organisms'
+    id = db.Column(db.String, primary_key = True)
+    name = db.Column(db.String)
+    ncbitaxonomyid = db.Column(db.String)
+    created_at = db.Column(db.String)
+    updated_at = db.Column(db.String)
+    common_name = db.Column(db.String)
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     # gets table of all donors in LIMS
@@ -264,11 +325,7 @@ def flatten_tree(data, parent_id=None, prefix=''):
 def display_specimen(specimen_id):
     # gets the specimen from the database based on specimen id
     specimen = Specimen.query.filter_by(id=specimen_id).first()
-
-    # gets parent name if any
-    parent_name = "None"
-    if specimen.parent_id is not None: 
-        parent_name = Specimen.query.filter_by(id=specimen.parent_id).first().name
+    specimen_data = populate_metadata(specimen)
 
     # gets image name if any
     image_url = "None"
@@ -283,7 +340,7 @@ def display_specimen(specimen_id):
     # if specimen.parent_id is not None:
     #     parent_name = Specimen.query.filter_by(id=specimen.parent_id).first().name
 
-    return render_template('specimen.html', name = specimen.name, specimen = specimen, parent_name = parent_name, image_url = image_url)
+    return render_template('specimen.html', name = specimen.name, specimen_data = specimen_data, image_url = image_url)
 
 # converts the image url to be in windows format with backslash instead of forwardslash
 def convert_image_url(storage_directory, image_name):
@@ -295,6 +352,56 @@ def convert_image_url(storage_directory, image_name):
 @app.route('/display_image/<image_path>')
 def display_image(image_path):
     return send_file(image_path, mimetype='image/jpeg')
+
+def populate_metadata(specimen):
+    image_type_id = "n/a"
+    if Image.query.filter_by(specimen_id=specimen.id).first():
+        image_type_id = Image.query.filter_by(specimen_id=specimen.id).first().image_type_id
+    
+    donor = Donor.query.filter_by(id=specimen.donor_id).first()
+
+    specimen_data = {
+        'id': specimen.id,
+        'name': specimen.name, 
+        'donor_id': specimen.donor_id, 
+        'parent_id': specimen.parent_id,
+        'storage_directory': specimen.storage_directory,
+        'plane_of_section': "n/a",
+        'hemisphere': "n/a", 
+        'project_name': "n/a", 
+        'structure': "n/a",
+        'parent_name': "n/a",
+        # 'specimen_type': SpecimenTypes.query.filter_by(id=specimen.id).first().name,
+        'age': "n/a",
+        'organism': "n/a",
+        'image_type': "n/a"
+    }
+
+    if specimen.hemisphere_id:
+        specimen_data['hemisphere'] = Hemisphere.query.filter_by(id=specimen.hemisphere_id).first().name
+    
+    if specimen.plane_of_section_id: 
+        specimen_data['plane_of_section'] = Plane.query.filter_by(id=specimen.plane_of_section_id).first().name
+    
+    if specimen.project_id:
+        specimen_data['project_name'] = Project.query.filter_by(id=specimen.project_id).first().name
+    
+    if specimen.structure_id:
+        specimen_data['structure'] = Structure.query.filter_by(id=specimen.structure_id).first().name
+    
+    if specimen.parent_id:
+        specimen_data['parent_name'] = Specimen.query.filter_by(id=specimen.parent_id).first().name
+    
+    if donor.age_id:
+        specimen_data['age'] = Age.query.filter_by(id=donor.age_id).first().name
+    
+    if donor.organism_id:
+        specimen_data['organism'] = Organism.query.filter_by(id=donor.organism_id).first().common_name
+    
+    if image_type_id != "n/a":
+        specimen_data['image_type'] = ImageTypes.query.filter_by(id=image_type_id).first().name
+
+    return specimen_data
 
 # will find the specimen associated with the given specimen_id 
 # in the combined_data list (aka the list that has the parent-child relationship)
