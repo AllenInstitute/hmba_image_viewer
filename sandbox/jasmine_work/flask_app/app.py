@@ -1,10 +1,10 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, render_template, redirect, url_for, jsonify, request, json
+from flask import Flask, render_template, redirect, url_for, send_from_directory, send_file
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Length
-import secrets, base64
+import secrets
 
 
 # this variable, db, will be used for all SQLAlchemy commands
@@ -140,6 +140,28 @@ class Image(db.Model):
     zoom_archive_dir = db.Column(db.String)
     treatment_id = db.Column(db.String)
 
+class SpecimenTypes(db.Model):
+    __tablename__ = 'specimen_types'
+    id = db.Column(db.String, primary_key = True)
+    name = db.Column(db.String) 
+    created_at = db.Column(db.String)
+    updated_at = db.Column(db.String)
+
+class Plane(db.Model):
+    __tablename__ = 'plane_of_sections'
+    id = db.Column(db.String, primary_key = True)
+    name = db.Column(db.String) 
+    created_at = db.Column(db.String)
+    updated_at = db.Column(db.String)
+
+class ImageTypes(db.Model):
+    __tablename__ = 'image_types'
+    id = db.Column(db.String, primary_key = True)
+    name = db.Column(db.String) 
+    created_at = db.Column(db.String)
+    updated_at = db.Column(db.String)
+    reuploadable = db.Column(db.String)
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     # gets table of all donors in LIMS
@@ -165,7 +187,8 @@ def home():
     return render_template('home.html',donors=donors, form=form, message=message)
     
 
-
+# builds the parent-child relationship between specimens 
+# generates dropdown menu with hierarchy built in through flattened data
 @app.route('/specimens/<donor_id>/')
 def specimens(donor_id):
 
@@ -223,6 +246,9 @@ def combine_data(specimens, relationships):
 
     return combined_data
 
+# flattens the data by automatically putting in the dashes for the 
+# dropdown hierarchy into the names of the specimens
+# returns the combined_data list with flattened names
 def flatten_tree(data, parent_id=None, prefix=''):
     flat_list = []
     for node in data:
@@ -232,27 +258,46 @@ def flatten_tree(data, parent_id=None, prefix=''):
             flat_list += flatten_tree(data, node['id'], prefix + '--- ')
     return flat_list
 
+# leads to the individual specimen page that will display the specified metadata
+# and the image of the specimen
 @app.route('/specimen-info/<specimen_id>/')
 def display_specimen(specimen_id):
     # gets the specimen from the database based on specimen id
     specimen = Specimen.query.filter_by(id=specimen_id).first()
 
+    # gets parent name if any
     parent_name = "None"
     if specimen.parent_id is not None: 
         parent_name = Specimen.query.filter_by(id=specimen.parent_id).first().name
 
-    # tried to get image file name but image is not in lims either
-    # image = Image.query.filter_by(specimen_id=specimen_id).first()
-    # print(image.jp2)
-
+    # gets image name if any
+    image_url = "None"
+    if specimen.storage_directory is not None:
+        storage_directory = specimen.storage_directory
+        image_name = Image.query.filter_by(specimen_id=specimen_id).first().jp2
+        image_url = "\\" + convert_image_url(storage_directory, image_name)
+        
     # combined_data = request.args.get('combined_data', None)
 
     # specimen = find_specimen(specimen_id, combined_data)
     # if specimen.parent_id is not None:
     #     parent_name = Specimen.query.filter_by(id=specimen.parent_id).first().name
 
-    return render_template('specimen.html', name = specimen.name, specimen = specimen, parent_name = parent_name)
+    return render_template('specimen.html', name = specimen.name, specimen = specimen, parent_name = parent_name, image_url = image_url)
 
+# converts the image url to be in windows format with backslash instead of forwardslash
+def convert_image_url(storage_directory, image_name):
+    original = str(storage_directory) + str(image_name)
+    return original.replace("/", "\\")
+
+# retrieves the appropriate image from the network based on the given image path
+# and returns it to be rendered in html
+@app.route('/display_image/<image_path>')
+def display_image(image_path):
+    return send_file(image_path, mimetype='image/jpeg')
+
+# will find the specimen associated with the given specimen_id 
+# in the combined_data list (aka the list that has the parent-child relationship)
 def find_specimen(specimen_id, combined_data):
     desired_specimen = {}
 
@@ -260,7 +305,6 @@ def find_specimen(specimen_id, combined_data):
         if specimen['id'] == specimen_id:
             desired_specimen = specimen
             break
-
 
     return desired_specimen
 

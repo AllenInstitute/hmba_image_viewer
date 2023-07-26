@@ -21,8 +21,10 @@ Donor Specimen List
 			<strong>{{ name }}</strong></p>
 
 	    <p class="ml-4"><a href="{{ url_for('home') }}">Return to home.</a></p>
-    
-        <img src="{{ url_for('static', filename='220_MERSCOPE.JPG')}}" alt="Specimen image" height="550">
+            
+        {% if image_url != "None" %} 
+            <img src = "{{ url_for('display_image', image_path=image_url) }}" alt = "Specimen image" height="550">
+        {% endif %}
         
             <table class="table">
                 <tr>

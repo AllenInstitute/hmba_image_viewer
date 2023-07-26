@@ -18,8 +18,12 @@ def main():
     hello = 1
     # for table_name in Base.classes.keys():
     #     print(table_name)
-    for column in inspector.get_columns("images"):
+    for column in inspector.get_columns("image_types"):
         print(str(hello) + ". " + column['name'] + " type: " + str(type(column['name'])))
         hello = hello + 1
+
+
+
+    engine.dispose()
 
 main()
