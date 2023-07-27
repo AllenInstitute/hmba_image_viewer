@@ -162,14 +162,6 @@ class ImageTypes(db.Model):
     updated_at = db.Column(db.String)
     reuploadable = db.Column(db.String)
 
-class Hemisphere(db.Model):
-    __tablename__ = 'hemispheres'
-    id = db.Column(db.String, primary_key = True)
-    name = db.Column(db.String) 
-    created_at = db.Column(db.String)
-    updated_at = db.Column(db.String)
-    symbol = db.Column(db.String)
-
 class Project(db.Model):
     __tablename__ = 'projects'
     id = db.Column(db.String, primary_key = True)
@@ -333,12 +325,6 @@ def display_specimen(specimen_id):
         storage_directory = specimen.storage_directory
         image_name = Image.query.filter_by(specimen_id=specimen_id).first().jp2
         image_url = "\\" + convert_image_url(storage_directory, image_name)
-        
-    # combined_data = request.args.get('combined_data', None)
-
-    # specimen = find_specimen(specimen_id, combined_data)
-    # if specimen.parent_id is not None:
-    #     parent_name = Specimen.query.filter_by(id=specimen.parent_id).first().name
 
     return render_template('specimen.html', name = specimen.name, specimen_data = specimen_data, image_url = image_url)
 
@@ -367,7 +353,6 @@ def populate_metadata(specimen):
         'parent_id': specimen.parent_id,
         'storage_directory': specimen.storage_directory,
         'plane_of_section': "n/a",
-        'hemisphere': "n/a", 
         'project_name': "n/a", 
         'structure': "n/a",
         'parent_name': "n/a",
@@ -376,9 +361,6 @@ def populate_metadata(specimen):
         'organism': "n/a",
         'image_type': "n/a"
     }
-
-    if specimen.hemisphere_id:
-        specimen_data['hemisphere'] = Hemisphere.query.filter_by(id=specimen.hemisphere_id).first().name
     
     if specimen.plane_of_section_id: 
         specimen_data['plane_of_section'] = Plane.query.filter_by(id=specimen.plane_of_section_id).first().name
@@ -401,6 +383,70 @@ def populate_metadata(specimen):
     if image_type_id != "n/a":
         specimen_data['image_type'] = ImageTypes.query.filter_by(id=image_type_id).first().name
 
+    print(SpecimenTypes.query.filter_by(id =specimen.name).first().name)
+    
+    print(specimen.id)
+    print(specimen.name)
+    print(specimen.plane_of_section_id)
+    print(specimen.frozen_at)
+    print(specimen.rna_integrity_number)
+    print(specimen.tissue_ph)
+    print(specimen.hemisphere_id)
+    print(specimen.created_by)
+    print(specimen.created_at)
+    print(specimen.updated_by)
+    print(specimen.updated_at)
+    print(specimen.structure_id)
+    print(specimen.postmortem_interval_id)
+    print(specimen.preparation_method_id)
+    print(specimen.parent_x_coord)
+    print(specimen.parent_y_coord)
+    print(specimen.parent_z_coord)
+    print(specimen.barcode)
+    print(specimen.location_id)
+    print(specimen.storage_directory)
+    print(specimen.project_id)
+    print(specimen.specimen_preparation_method_id)
+    print(specimen.alignment3d_id)
+    print(specimen.reference_space_id)
+    print(specimen.external_specimen_name)
+    print(specimen.normalization_group_id)
+    print(specimen.carousel_well_name)
+    print(specimen.donor_id )
+    print(specimen.ephys_cell_plan_id)
+    print(specimen.ephys_roi_result_id)
+    print(specimen.histology_well_name)
+    print(specimen.priority)
+    print(specimen.ephys_neural_tissue_plan_id)
+    print(specimen.tissue_processing_id)
+    print(specimen.task_flow_id)
+    print(specimen.specimen_set_id)
+    print(specimen.biophysical_model_state)
+    print(specimen.cell_prep_id)
+    print(specimen.data)
+    print(specimen.cell_depth)
+    print(specimen.cell_reporter_id)
+    print(specimen.facs_well_id)
+    print(specimen.patched_cell_container)
+    print(specimen.cortex_layer_id)
+    print(specimen.cell_label)
+    print(specimen.flipped_specimen_id)
+    print(specimen.operation_id)
+    print(specimen.pinned_radius)
+    print(specimen.x_coord)
+    print(specimen.y_coord)
+    print(specimen.ephys_qc_result)
+    print(specimen.ephys_start_time_sec)
+    print(specimen.starter_cell_count)
+    print(specimen.task_id)
+    print(specimen.workflow_state)
+    print(specimen.mfish_experiment_id)
+    print(specimen.sectioning_task_id)
+    print(specimen.merscope_experiment_id)
+    print(specimen.oligo_tag)
+    print(specimen.parent_id)
+
+
     return specimen_data
 
 # will find the specimen associated with the given specimen_id 
@@ -414,6 +460,11 @@ def find_specimen(specimen_id, combined_data):
             break
 
     return desired_specimen
+
+def display_specimen_types():
+    print(specimen_types = SpecimenTypes.query.filter_by(name='Cell').first().id)
+
+
 
 if __name__ == '__main__':
     db.create_all()
