@@ -215,6 +215,11 @@ class Organism(db.Model):
     updated_at = db.Column(db.String)
     common_name = db.Column(db.String)
 
+class SpecimenTypesSpecimens(db.Model):
+    __tablename__ = 'specimen_types_specimens'
+    specimen_type_id = db.Column(db.String)
+    specimen_id = db.Column(db.String, primary_key = True)
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     # gets table of all donors in LIMS
@@ -340,11 +345,6 @@ def display_image(image_path):
     return send_file(image_path, mimetype='image/jpeg')
 
 def populate_metadata(specimen):
-    image_type_id = "n/a"
-    if Image.query.filter_by(specimen_id=specimen.id).first():
-        image_type_id = Image.query.filter_by(specimen_id=specimen.id).first().image_type_id
-    
-    donor = Donor.query.filter_by(id=specimen.donor_id).first()
 
     specimen_data = {
         'id': specimen.id,
@@ -356,7 +356,7 @@ def populate_metadata(specimen):
         'project_name': "n/a", 
         'structure': "n/a",
         'parent_name': "n/a",
-        # 'specimen_type': SpecimenTypes.query.filter_by(id=specimen.id).first().name,
+        'specimen_type': "n/a",
         'age': "n/a",
         'organism': "n/a",
         'image_type': "n/a"
@@ -373,79 +373,22 @@ def populate_metadata(specimen):
     
     if specimen.parent_id:
         specimen_data['parent_name'] = Specimen.query.filter_by(id=specimen.parent_id).first().name
-    
+
+    donor = Donor.query.filter_by(id=specimen.donor_id).first()
     if donor.age_id:
         specimen_data['age'] = Age.query.filter_by(id=donor.age_id).first().name
     
     if donor.organism_id:
         specimen_data['organism'] = Organism.query.filter_by(id=donor.organism_id).first().common_name
-    
-    if image_type_id != "n/a":
+
+    image = Image.query.filter_by(specimen_id=specimen.id).first()
+    if image:
+        image_type_id = Image.query.filter_by(specimen_id=specimen.id).first().image_type_id
         specimen_data['image_type'] = ImageTypes.query.filter_by(id=image_type_id).first().name
 
-    print(SpecimenTypes.query.filter_by(id =specimen.name).first().name)
-    
-    print(specimen.id)
-    print(specimen.name)
-    print(specimen.plane_of_section_id)
-    print(specimen.frozen_at)
-    print(specimen.rna_integrity_number)
-    print(specimen.tissue_ph)
-    print(specimen.hemisphere_id)
-    print(specimen.created_by)
-    print(specimen.created_at)
-    print(specimen.updated_by)
-    print(specimen.updated_at)
-    print(specimen.structure_id)
-    print(specimen.postmortem_interval_id)
-    print(specimen.preparation_method_id)
-    print(specimen.parent_x_coord)
-    print(specimen.parent_y_coord)
-    print(specimen.parent_z_coord)
-    print(specimen.barcode)
-    print(specimen.location_id)
-    print(specimen.storage_directory)
-    print(specimen.project_id)
-    print(specimen.specimen_preparation_method_id)
-    print(specimen.alignment3d_id)
-    print(specimen.reference_space_id)
-    print(specimen.external_specimen_name)
-    print(specimen.normalization_group_id)
-    print(specimen.carousel_well_name)
-    print(specimen.donor_id )
-    print(specimen.ephys_cell_plan_id)
-    print(specimen.ephys_roi_result_id)
-    print(specimen.histology_well_name)
-    print(specimen.priority)
-    print(specimen.ephys_neural_tissue_plan_id)
-    print(specimen.tissue_processing_id)
-    print(specimen.task_flow_id)
-    print(specimen.specimen_set_id)
-    print(specimen.biophysical_model_state)
-    print(specimen.cell_prep_id)
-    print(specimen.data)
-    print(specimen.cell_depth)
-    print(specimen.cell_reporter_id)
-    print(specimen.facs_well_id)
-    print(specimen.patched_cell_container)
-    print(specimen.cortex_layer_id)
-    print(specimen.cell_label)
-    print(specimen.flipped_specimen_id)
-    print(specimen.operation_id)
-    print(specimen.pinned_radius)
-    print(specimen.x_coord)
-    print(specimen.y_coord)
-    print(specimen.ephys_qc_result)
-    print(specimen.ephys_start_time_sec)
-    print(specimen.starter_cell_count)
-    print(specimen.task_id)
-    print(specimen.workflow_state)
-    print(specimen.mfish_experiment_id)
-    print(specimen.sectioning_task_id)
-    print(specimen.merscope_experiment_id)
-    print(specimen.oligo_tag)
-    print(specimen.parent_id)
-
+    specimen_type = SpecimenTypesSpecimens.query.filter_by(specimen_id=specimen.id).first()
+    if specimen_type:
+        specimen_data['specimen_type'] = SpecimenTypes.query.filter_by(id=specimen_type.specimen_type_id).first().name
 
     return specimen_data
 

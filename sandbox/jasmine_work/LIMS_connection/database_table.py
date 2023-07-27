@@ -29,7 +29,7 @@ def main():
     #             print(str(hello) + ". " + column['name'] + " type: " + str(type(column['name'])))
 
     # prints the columns of the specified table with the col type
-    for column in inspector.get_columns("specimens"):
+    for column in inspector.get_columns("specimen_types_specimens"):
         print(str(hello) + ". " + column['name'] + " var: " + str(type(column['name'])))
         hello = hello + 1
 
