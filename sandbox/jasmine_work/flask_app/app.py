@@ -255,27 +255,43 @@ def specimens(donor_id):
 
     relationships = build_relationship(specimens)
 
-    combined_data = combine_data(specimens, relationships)
+    # combined_data = combine_data(specimens, relationships)
 
     # manually adds dashes to each specimen name so dropdown display has the hierarchy
-    flat_data = flatten_tree(combined_data)
+    # flat_data = flatten_tree(combined_data)
 
     # renders template that displays all specimens in table with their id and parent id
-    return render_template('drop_down_test.html', flat_data=flat_data, combined_data=combined_data)
+    return render_template('drop_down_test.html', combined_data = relationships)
 
 # specimens = table of all specimens with given donor_id
 # maps specimen ids to children
 def build_relationship(specimens):
     relationships = {}
+    root_names = []
+    parent_nodes = {}
 
     for specimen in specimens:
-        parent_id = specimen.parent_id 
-        if parent_id != '':
-            if parent_id not in relationships:
-                relationships[parent_id] = []
-        relationships[parent_id].append(specimen.id)
+        parent_id = specimen.parent_id
+        if parent_id:
+            parent_name = Specimen.query.filter_by(id=specimen.parent_id).first().name
+            if parent_name not in relationships:
+                relationships[parent_name] = []
+            relationships[parent_name].append(specimen.name)
+        else:
+            root_names.append(specimen.name)
+        
+    # for relationship in relationships:
+    #     print("Parent: " + str(relationship))
+    #     print("Children" + str(relationships[relationship]))
+
+    for name in root_names:
+        parent_nodes[name] = relationships[name]
     
-    return relationships
+    for parent in parent_nodes:
+        print("parent: " + str(parent))
+        print("child: " + str(parent_nodes[parent]))
+    
+    return root_names
     
 # specimens = table of all specimens with given donor_id
 # relationships = dictionary mapping specimen_id to children
@@ -297,10 +313,18 @@ def combine_data(specimens, relationships):
             'donor_id': specimen.donor_id, 
             'parent_id': specimen.parent_id,
         }
-        if specimen.id in relationships:
-            specimen_data['children'] = relationships[specimen.id]
+        if specimen.name in relationships:
+            specimen_data['children'] = relationships[specimen.name]
 
-        combined_data.append(specimen_data)
+        if specimen.parent_id is None:
+            combined_data.append(specimen_data)
+    
+    for specimen in combined_data:
+        print(specimen['name'])
+        if specimen['children']:
+            for child in specimen['children']:
+                print("child: " + str(child))
+
 
     return combined_data
 
@@ -344,6 +368,7 @@ def convert_image_url(storage_directory, image_name):
 def display_image(image_path):
     return send_file(image_path, mimetype='image/jpeg')
 
+# gets all of the relevant metadata for the given specimen
 def populate_metadata(specimen):
 
     specimen_data = {

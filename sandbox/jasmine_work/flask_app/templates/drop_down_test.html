@@ -9,14 +9,18 @@ Donor Specimen List
     <div class="row pb-5">
         <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
             <h1 class="pt-5 pb-2">Donor Specimens</h1>
-            <form>
-                <select id="tree-dropdown">
-                    <option value="">-- Select a node --</option>
-                    {% for node in flat_data %}
-                        <option value="{{ node.id }}">{{ node.name }}</option>
+                <ul>
+                    {% for node in combined_data recursive %}
+                        <li>
+                            {{ node }}
+                            {% if combined_data[node] %}
+                                <ul>
+                                    {{ loop(combined_data[node]) }}
+                                </ul>
+                            {% endif %}
+                        </li>
                     {% endfor %}
-                </select>
-            </form>
+                </ul>
         </div>
     </div>
 </div>
