@@ -114,10 +114,6 @@ class Donor(db.Model):
     occupation_id = db.Column(db.String)
     water_restricted = db.Column(db.String)
 
-class DonorForm(FlaskForm):
-    donor = StringField('What is the name of the donor you would like to see?', validators=[DataRequired(), Length(10, 40)])
-    submit = SubmitField('Submit')
-
 class Image(db.Model):
     __tablename__ = 'images'
     id = db.Column(db.String, primary_key = True)
@@ -219,6 +215,10 @@ class SpecimenTypesSpecimens(db.Model):
     __tablename__ = 'specimen_types_specimens'
     specimen_type_id = db.Column(db.String)
     specimen_id = db.Column(db.String, primary_key = True)
+
+class DonorForm(FlaskForm):
+    donor = StringField('What is the name of the donor you would like to see?', validators=[DataRequired(), Length(10, 40)])
+    submit = SubmitField('Submit')
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
@@ -391,23 +391,6 @@ def populate_metadata(specimen):
         specimen_data['specimen_type'] = SpecimenTypes.query.filter_by(id=specimen_type.specimen_type_id).first().name
 
     return specimen_data
-
-# will find the specimen associated with the given specimen_id 
-# in the combined_data list (aka the list that has the parent-child relationship)
-def find_specimen(specimen_id, combined_data):
-    desired_specimen = {}
-
-    for specimen in combined_data:
-        if specimen['id'] == specimen_id:
-            desired_specimen = specimen
-            break
-
-    return desired_specimen
-
-def display_specimen_types():
-    print(specimen_types = SpecimenTypes.query.filter_by(name='Cell').first().id)
-
-
 
 if __name__ == '__main__':
     db.create_all()
