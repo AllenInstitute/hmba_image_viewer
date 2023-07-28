@@ -13,16 +13,18 @@ Donor Specimen List
             <h1 class="pt-5 pb-2">Donor Specimens</h1>
                 <ul id="myUL">
                     {% for node in tree recursive %}
-                    <li span class="caret">
-                        {{ node.name }}
+                    <li>
                         {% if node.children %}
+                        <span class="caret">{{ node.name }}</span>
                         <ul class="nested">
                             {{ loop(node.children) }}
                         </ul>
+                        {% else %}
+                        <span class="bullet_point">{{ node.name }}</span>
                         {% endif %}
                     </li>
                     {% endfor %}
-              </ul>
+                </ul>
         </div>
     </div>
 </div>

@@ -37,3 +37,13 @@ ul, #myUL {
   .active {
     display: block;
   }
+
+  /* Style for nodes without children (leaves) */
+.bullet_point:before {
+  content: "\2022";
+  color: black;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+  

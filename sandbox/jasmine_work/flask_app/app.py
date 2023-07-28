@@ -285,53 +285,6 @@ def build_tree(specimens):
     trees = [build_node(root) for root in root_names]
     
     return trees
-    
-# specimens = table of all specimens with given donor_id
-# relationships = dictionary mapping specimen_id to children
-# creates dictionary of specimen metadata including their children
-def combine_data(specimens, relationships):
-    combined_data = []
-
-    for specimen in specimens:
-
-        specimen_data = {
-            'id': specimen.id,
-            'name': specimen.name, 
-            'plane_of_section_id': specimen.plane_of_section_id,
-            'hemisphere_id': specimen.hemisphere_id, 
-            'parent_x_coord': specimen.parent_x_coord, 
-            'parent_y_coord': specimen.parent_y_coord,             
-            'parent_z_coord': specimen.parent_z_coord, 
-            'project_id': specimen.project_id, 
-            'donor_id': specimen.donor_id, 
-            'parent_id': specimen.parent_id,
-        }
-        if specimen.name in relationships:
-            specimen_data['children'] = relationships[specimen.name]
-
-        if specimen.parent_id is None:
-            combined_data.append(specimen_data)
-    
-    for specimen in combined_data:
-        print(specimen['name'])
-        if specimen['children']:
-            for child in specimen['children']:
-                print("child: " + str(child))
-
-
-    return combined_data
-
-# flattens the data by automatically putting in the dashes for the 
-# dropdown hierarchy into the names of the specimens
-# returns the combined_data list with flattened names
-def flatten_tree(data, parent_id=None, prefix=''):
-    flat_list = []
-    for node in data:
-        if node['parent_id'] == parent_id:
-            node['name'] = prefix + node['name']
-            flat_list.append(node)
-            flat_list += flatten_tree(data, node['id'], prefix + '--- ')
-    return flat_list
 
 # leads to the individual specimen page that will display the specified metadata
 # and the image of the specimen
