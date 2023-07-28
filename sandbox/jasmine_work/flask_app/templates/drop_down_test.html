@@ -10,17 +10,17 @@ Donor Specimen List
         <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
             <h1 class="pt-5 pb-2">Donor Specimens</h1>
                 <ul>
-                    {% for node in combined_data recursive %}
-                        <li>
-                            {{ node }}
-                            {% if combined_data[node] %}
-                                <ul>
-                                    {{ loop(combined_data[node]) }}
-                                </ul>
-                            {% endif %}
-                        </li>
+                    {% for node in tree recursive %}
+                    <li>
+                        {{ node.name }}
+                        {% if node.children %}
+                        <ul>
+                            {{ loop(node.children) }}
+                        </ul>
+                        {% endif %}
+                    </li>
                     {% endfor %}
-                </ul>
+              </ul>
         </div>
     </div>
 </div>

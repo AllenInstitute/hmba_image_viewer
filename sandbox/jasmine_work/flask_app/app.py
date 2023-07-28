@@ -220,6 +220,11 @@ class DonorForm(FlaskForm):
     donor = StringField('What is the name of the donor you would like to see?', validators=[DataRequired(), Length(10, 40)])
     submit = SubmitField('Submit')
 
+class Node:
+    def __init__ (self, name, children=None):
+        self.name = name 
+        self.children = children if children is not None else []
+
 @app.route('/', methods=['GET', 'POST'])
 def home():
     # gets table of all donors in LIMS
@@ -253,22 +258,19 @@ def specimens(donor_id):
     # get table of specimens matching given donor id (has all columns!)
     specimens = Specimen.query.filter_by(donor_id=donor_id).order_by(Specimen.name)
 
-    relationships = build_relationship(specimens)
-
-    # combined_data = combine_data(specimens, relationships)
-
-    # manually adds dashes to each specimen name so dropdown display has the hierarchy
-    # flat_data = flatten_tree(combined_data)
+    tree = build_tree(specimens)
 
     # renders template that displays all specimens in table with their id and parent id
-    return render_template('drop_down_test.html', combined_data = relationships)
+    return render_template('drop_down_test.html', tree = tree)
 
 # specimens = table of all specimens with given donor_id
 # maps specimen ids to children
-def build_relationship(specimens):
+def build_tree(specimens):
+    def build_node(name):
+        return Node(name, [build_node(child) for child in relationships.get(name, [])])
+    
     relationships = {}
     root_names = []
-    parent_nodes = {}
 
     for specimen in specimens:
         parent_id = specimen.parent_id
@@ -279,19 +281,10 @@ def build_relationship(specimens):
             relationships[parent_name].append(specimen.name)
         else:
             root_names.append(specimen.name)
-        
-    # for relationship in relationships:
-    #     print("Parent: " + str(relationship))
-    #     print("Children" + str(relationships[relationship]))
-
-    for name in root_names:
-        parent_nodes[name] = relationships[name]
     
-    for parent in parent_nodes:
-        print("parent: " + str(parent))
-        print("child: " + str(parent_nodes[parent]))
+    trees = [build_node(root) for root in root_names]
     
-    return root_names
+    return trees
     
 # specimens = table of all specimens with given donor_id
 # relationships = dictionary mapping specimen_id to children
