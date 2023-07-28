@@ -13,14 +13,12 @@ ul, #myUL {
   .caret {
     cursor: pointer;
     user-select: none; /* Prevent text selection */
-  }
-  
-  /* Create the caret/arrow with a unicode, and style it */
-  .caret::before {
-    content: "\25B6";
-    color: black;
     display: inline-block;
-    margin-right: 6px;
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 10px solid black;
   }
   
   /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
@@ -44,6 +42,14 @@ ul, #myUL {
   color: black;
   display: inline-block;
   margin-right: 6px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover{
+  text-decoration: underline;
 }
 
   

@@ -248,7 +248,6 @@ def home():
         else:
             message = "That donor is not in our database"
     return render_template('home.html',donors=donors, form=form, message=message)
-    
 
 # builds the parent-child relationship between specimens 
 # generates dropdown menu with hierarchy built in through flattened data
@@ -288,17 +287,17 @@ def build_tree(specimens):
 
 # leads to the individual specimen page that will display the specified metadata
 # and the image of the specimen
-@app.route('/specimen-info/<specimen_id>/')
-def display_specimen(specimen_id):
+@app.route('/specimen-info/<specimen_name>/')
+def display_specimen(specimen_name):
     # gets the specimen from the database based on specimen id
-    specimen = Specimen.query.filter_by(id=specimen_id).first()
+    specimen = Specimen.query.filter_by(name=specimen_name).first()
     specimen_data = populate_metadata(specimen)
 
     # gets image name if any
     image_url = "None"
     if specimen.storage_directory is not None:
         storage_directory = specimen.storage_directory
-        image_name = Image.query.filter_by(specimen_id=specimen_id).first().jp2
+        image_name = Image.query.filter_by(specimen_id=specimen.id).first().jp2
         image_url = "\\" + convert_image_url(storage_directory, image_name)
 
     return render_template('specimen.html', name = specimen.name, specimen_data = specimen_data, image_url = image_url)

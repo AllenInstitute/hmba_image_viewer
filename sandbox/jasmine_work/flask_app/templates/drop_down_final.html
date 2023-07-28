@@ -14,17 +14,18 @@ Donor Specimen List
                 <ul id="myUL">
                     {% for node in tree recursive %}
                     <li>
-                        {% if node.children %}
-                        <span class="caret">{{ node.name }}</span>
-                        <ul class="nested">
-                            {{ loop(node.children) }}
-                        </ul>
-                        {% else %}
-                        <span class="bullet_point">{{ node.name }}</span>
-                        {% endif %}
+                    {% if node.children %}
+                    <span class="caret"></span>
+                    <span class="clickable">{{ node.name }}</span>
+                    <ul class="nested">
+                        {{ loop(node.children) }}
+                    </ul>
+                    {% else %}
+                    <span class="bullet_point clickable">{{ node.name }}</span>
+                    {% endif %}
                     </li>
                     {% endfor %}
-                </ul>
+              </ul>
         </div>
     </div>
 </div>
