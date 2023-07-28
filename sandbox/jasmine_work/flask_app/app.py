@@ -261,7 +261,7 @@ def specimens(donor_id):
     tree = build_tree(specimens)
 
     # renders template that displays all specimens in table with their id and parent id
-    return render_template('drop_down_test.html', tree = tree)
+    return render_template('drop_down_final.html', tree = tree)
 
 # specimens = table of all specimens with given donor_id
 # maps specimen ids to children
