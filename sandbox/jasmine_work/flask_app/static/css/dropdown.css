@@ -22,7 +22,7 @@ ul, #myUL {
   }
   
   /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
-  .caret-down::before {
+  .caret-down {
     transform: rotate(90deg);
   }
   
