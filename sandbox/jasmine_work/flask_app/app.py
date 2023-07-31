@@ -256,11 +256,12 @@ def specimens(donor_id):
 
     # get table of specimens matching given donor id (has all columns!)
     specimens = Specimen.query.filter_by(donor_id=donor_id).order_by(Specimen.name)
+    specimen = specimens.first()
 
     tree = build_tree(specimens)
 
     # renders template that displays all specimens in table with their id and parent id
-    return render_template('drop_down_final.html', tree = tree)
+    return render_template('dropdown_and_metadata.html', tree = tree, specimen_data = specimen)
 
 # specimens = table of all specimens with given donor_id
 # maps specimen ids to children

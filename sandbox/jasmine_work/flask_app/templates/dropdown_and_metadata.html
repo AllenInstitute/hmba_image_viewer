@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Donor Specimen List
+{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown_and_metadata.css') }}" type="text/css">
+
+<div class = "page"> 
+    <div class="container dropdown-div">
+        <div class="row pb-5">
+            <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
+                <h1 class="pt-5 pb-2">Donor Specimens</h1>
+                    <ul id="myUL">
+                        {% for node in tree recursive %}
+                        <li>
+                        {% if node.children %}
+                        <span class="caret"></span>
+                        <span class="clickable">{{ node.name }}</span>
+                        <ul class="nested">
+                            {{ loop(node.children) }}
+                        </ul>
+                        {% else %}
+                        <span class="bullet_point clickable">{{ node.name }}</span>
+                        {% endif %}
+                        </li>
+                        {% endfor %}
+                    </ul>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='javascript/dropdown.js') }}"></script>
+    
+    <div class="container metadata-div">
+        <div class="row pb-5">
+            <div class="col-md-10 col-lg-8">
+          
+                <meta charset="utf-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+          
+                <h1 class="pt-5 pb-2">Specimen Information</h1>
+          
+                <p class="lead alert alert-warning">This is the metadata associated with specimen: 
+                    <strong> {{ specimen_data.name }} </strong></p>
+          
+                <p class="ml-4"><a href="{{ url_for('home') }}">Return to home.</a></p>
+                      
+                {% if image_url != "None" %} 
+                    <img src = "{{ url_for('display_image', image_path=image_url) }}" alt = "Specimen image" height="550">
+                    <!-- <img src = "\\allen\\programs\\celltypes\\production\\nhpcelltypes\\macaqueatlas\\prod0\\specimen_1249142939\\1_220_MERSCOPE.aff" alt = "Specimen image" height="550"> -->
+                {% endif %}
+                  
+                    <table class="table">
+                        <tr>
+                            <th>Specimen name</th>
+                            <td>{{ specimen_data.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Specimen ID</th>
+                            <td>{{ specimen_data.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Parent Name</th>
+                            <td>{{ specimen_data.parent_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Parent ID</th>
+                            <td>{{ specimen_data.parent_id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Donor ID</th>
+                            <td>{{ specimen_data.donor_id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Project Name</th>
+                            <td>{{ specimen_data.project_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Specimen Type</th>
+                            <td>{{ specimen_data.specimen_type }}</td>
+                        </tr>
+                        <tr>
+                            <th>Plane of Section</th>
+                            <td>{{ specimen_data.plane_of_section }}</td>
+                        </tr>
+                        <tr>
+                            <th>Structure</th>
+                            <td>{{ specimen_data.structure }}</td>
+                        </tr>
+                        <tr>
+                            <th>Organism</th>
+                            <td>{{ specimen_data.organism }}</td>
+                        </tr>
+                        <tr>
+                            <th>Age</th>
+                            <td>{{ specimen_data.age }}</td>
+                        </tr>
+                        <tr>
+                            <th>Storage Directory</th>
+                            <td>{{ specimen_data.storage_directory }}</td>
+                        </tr>
+                        <tr>
+                            <th>Image Type</th>
+                            <td>{{ specimen_data.image_type }}</td>
+                        </tr>
+                        <tr>
+                            <th>Image Name</th>
+                            <td>{{ specimen_data.image_name }}</td>
+                        </tr>
+           
+                    </table>
+          
+                </table>
+          
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
