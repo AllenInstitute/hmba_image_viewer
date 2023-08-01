@@ -226,6 +226,7 @@ class Node:
         self.name = name 
         self.children = children if children is not None else []
 
+# asks the user to enter the donor they want to see the data for
 @app.route('/', methods=['GET', 'POST'])
 def home():
     # gets table of all donors in LIMS
@@ -240,12 +241,10 @@ def home():
         donor = Donor.query.filter_by(name = donor_name).first()
         if donor is not None:
             form.donor.data = ""
-
-            donor_id = donor.id
-
+            
             # goes to appropriate specimen page based on donor id 
             # calls specimen method
-            return redirect(url_for('specimens', donor_id=donor_id))
+            return redirect(url_for('specimens', donor_id=donor.id))
         else:
             message = "That donor is not in our database"
     return render_template('home.html',donors=donors, form=form, message=message)
@@ -257,6 +256,9 @@ def specimens(donor_id):
 
     # get table of specimens matching given donor id (has all columns!)
     specimens = Specimen.query.filter_by(donor_id=donor_id).order_by(Specimen.name)
+
+    # provides the metadata for the first specimen in the specimen list for the requested donor 
+    # makes it so that the starting metadata display is the root specimen 
     specimen_data = populate_metadata(specimens.first().name)
 
     tree = build_tree(specimens)
@@ -334,10 +336,8 @@ def populate_metadata(specimen_name):
 
     image = Image.query.filter_by(specimen_id=specimen.id).first()
     if image:
-        image_type_id = image.image_type_id
-        specimen_data['image_type'] = ImageTypes.query.filter_by(id=image_type_id).first().name
+        specimen_data['image_type'] = ImageTypes.query.filter_by(id=image.image_type_id).first().name
         specimen_data['image_name'] = image.zoom
-        # specimen_data['image_url'] = convert_aff("\\" + convert_image_url(specimen_data['storage_directory'], specimen_data['image_name']), image)
         specimen_data['image_url'] = convert_aff("//" + str(specimen_data['storage_directory'] + specimen_data['image_name']), image)
 
     specimen_type = SpecimenTypesSpecimens.query.filter_by(specimen_id=specimen.id).first()
