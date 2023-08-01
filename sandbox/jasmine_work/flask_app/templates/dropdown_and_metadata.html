@@ -46,17 +46,12 @@ Donor Specimen List
                     <strong data-key="name"> {{ specimen_data.name }} </strong></p>
           
                 <p class="ml-4"><a href="{{ url_for('home') }}">Return to home.</a></p>
-                      
-                {% if image_url != "None" %} 
-                    <img src = "{{ url_for('display_image', image_path=image_url) }}" alt = "Specimen image" height="550">
-                    <!-- <img src = "\\allen\\programs\\celltypes\\production\\nhpcelltypes\\macaqueatlas\\prod0\\specimen_1249142939\\1_220_MERSCOPE.aff" alt = "Specimen image" height="550"> -->
+                    
+                {% if specimen_data['image_url'] != "None" %} 
+                    <img src = "{{ specimen_data['image_url'] }}" alt = "Specimen image" height="550"]>
                 {% endif %}
                   
                     <table class="table">
-                        <tr>
-                            <th>Specimen name</th>
-                            <td data-key="name">{{ specimen_data.name }}</td>
-                        </tr>
                         <tr>
                             <th>Specimen ID</th>
                             <td data-key="id">{{ specimen_data.id }}</td>

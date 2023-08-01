@@ -288,15 +288,15 @@ def build_tree(specimens):
     return trees
 
 # converts the image url to be in windows format with backslash instead of forwardslash
-def convert_image_url(storage_directory, image_name):
-    original = str(storage_directory) + str(image_name)
-    return original.replace("/", "\\")
+# def convert_image_url(storage_directory, image_name):
+#     original = str(storage_directory) + str(image_name)
+#     return original.replace("/", "\\")
 
 # retrieves the appropriate image from the network based on the given image path
 # and returns it to be rendered in html
-@app.route('/display_image/<image_path>')
-def display_image(image_path):
-    return send_file(image_path, mimetype='image/jpeg')
+# @app.route('/display_image/<image_path>')
+# def display_image(image_path):
+#     return send_file(image_path, mimetype='image/jpeg')
 
 # gets all of the relevant metadata for the given specimen
 def populate_metadata(specimen_name):
@@ -345,10 +345,11 @@ def populate_metadata(specimen_name):
 
     image = Image.query.filter_by(specimen_id=specimen.id).first()
     if image:
-        image_type_id = Image.query.filter_by(specimen_id=specimen.id).first().image_type_id
+        image_type_id = image.image_type_id
         specimen_data['image_type'] = ImageTypes.query.filter_by(id=image_type_id).first().name
-        specimen_data['image_name'] = image.jp2
-        specimen_data['image_url'] = "\\" + convert_image_url(specimen_data['storage_directory'], specimen_data['image_name'])
+        specimen_data['image_name'] = image.zoom
+        # specimen_data['image_url'] = convert_aff("\\" + convert_image_url(specimen_data['storage_directory'], specimen_data['image_name']), image)
+        specimen_data['image_url'] = convert_aff("//" + str(specimen_data['storage_directory'] + specimen_data['image_name']), image)
 
     specimen_type = SpecimenTypesSpecimens.query.filter_by(specimen_id=specimen.id).first()
     if specimen_type:
@@ -356,6 +357,19 @@ def populate_metadata(specimen_name):
 
     return specimen_data
 
+# creates the image url for an .aff image so it can be rendered in html
+def convert_aff(img_path, image):
+    new_url = 'http://lims2/cgi-bin/imageservice?mime=2&path=' 
+    new_url += str(img_path)
+    new_url +=  '&top=0&left=0&width='
+    new_url += str(image.height)
+    new_url += '&zoom='
+    new_url += str(image.zoom_tiers - 1)
+
+    return new_url
+
+# reroutes the page to update the metadata based on which specimen the user clicks in the dropdown menu
+# makes it so that the state of the dropdown menu doesn't change as you click through it
 @app.route('/get_specimen_data', methods=['POST'])
 def get_specimen_data():
     data= request.get_json()
