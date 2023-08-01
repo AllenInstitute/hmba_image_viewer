@@ -42,8 +42,8 @@ Donor Specimen List
           
                 <h1 class="pt-5 pb-2">Specimen Information</h1>
           
-                <p class="lead alert alert-warning">This is the metadata associated with specimen: 
-                    <strong> {{ specimen_data.name }} </strong></p>
+                <p class="lead alert alert-warning" >This is the metadata associated with specimen: 
+                    <strong data-key="name"> {{ specimen_data.name }} </strong></p>
           
                 <p class="ml-4"><a href="{{ url_for('home') }}">Return to home.</a></p>
                       
@@ -55,59 +55,59 @@ Donor Specimen List
                     <table class="table">
                         <tr>
                             <th>Specimen name</th>
-                            <td>{{ specimen_data.name }}</td>
+                            <td data-key="name">{{ specimen_data.name }}</td>
                         </tr>
                         <tr>
                             <th>Specimen ID</th>
-                            <td>{{ specimen_data.id }}</td>
+                            <td data-key="id">{{ specimen_data.id }}</td>
                         </tr>
                         <tr>
                             <th>Parent Name</th>
-                            <td>{{ specimen_data.parent_name }}</td>
+                            <td data-key="parent_name">{{ specimen_data.parent_name }}</td>
                         </tr>
                         <tr>
                             <th>Parent ID</th>
-                            <td>{{ specimen_data.parent_id }}</td>
+                            <td data-key="parent_id">{{ specimen_data.parent_id }}</td>
                         </tr>
                         <tr>
                             <th>Donor ID</th>
-                            <td>{{ specimen_data.donor_id }}</td>
+                            <td data-key="donor_id">{{ specimen_data.donor_id }}</td>
                         </tr>
                         <tr>
                             <th>Project Name</th>
-                            <td>{{ specimen_data.project_name }}</td>
+                            <td data-key="project_name">{{ specimen_data.project_name }}</td>
                         </tr>
                         <tr>
                             <th>Specimen Type</th>
-                            <td>{{ specimen_data.specimen_type }}</td>
+                            <td data-key="specimen_type">{{ specimen_data.specimen_type }}</td>
                         </tr>
                         <tr>
                             <th>Plane of Section</th>
-                            <td>{{ specimen_data.plane_of_section }}</td>
+                            <td data-key="plane_of_section">{{ specimen_data.plane_of_section }}</td>
                         </tr>
                         <tr>
                             <th>Structure</th>
-                            <td>{{ specimen_data.structure }}</td>
+                            <td data-key="structure">{{ specimen_data.structure }}</td>
                         </tr>
                         <tr>
                             <th>Organism</th>
-                            <td>{{ specimen_data.organism }}</td>
+                            <td data-key="organism">{{ specimen_data.organism }}</td>
                         </tr>
                         <tr>
                             <th>Age</th>
-                            <td>{{ specimen_data.age }}</td>
+                            <td data-key="age">{{ specimen_data.age }}</td>
                         </tr>
                         <tr>
                             <th>Storage Directory</th>
-                            <td>{{ specimen_data.storage_directory }}</td>
+                            <td data-key="storage_directory">{{ specimen_data.storage_directory }}</td>
                         </tr>
                         <tr>
                             <th>Image Type</th>
-                            <td>{{ specimen_data.image_type }}</td>
+                            <td data-key="image_type">{{ specimen_data.image_type }}</td>
                         </tr>
                         <tr>
                             <th>Image Name</th>
-                            <td>{{ specimen_data.image_name }}</td>
+                            <td data-key="image_name">{{ specimen_data.image_name }}</td>
                         </tr>
            
                     </table>

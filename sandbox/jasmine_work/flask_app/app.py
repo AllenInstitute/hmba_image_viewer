@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, render_template, redirect, url_for, send_from_directory, send_file
+from flask import Flask, render_template, redirect, url_for, send_file, request, jsonify
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import StringField, SubmitField
@@ -17,6 +17,7 @@ foo = secrets.token_urlsafe(16)
 app.secret_key = foo
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://atlasreader:atlasro@limsdb3/lims2'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+app.config['WTF_CSRF_ENABLED'] = False
 
 # initialize the app with Flask-SQLAlchemy
 db.init_app(app)
@@ -256,12 +257,12 @@ def specimens(donor_id):
 
     # get table of specimens matching given donor id (has all columns!)
     specimens = Specimen.query.filter_by(donor_id=donor_id).order_by(Specimen.name)
-    specimen = specimens.first()
+    specimen_data = populate_metadata(specimens.first().name)
 
     tree = build_tree(specimens)
 
     # renders template that displays all specimens in table with their id and parent id
-    return render_template('dropdown_and_metadata.html', tree = tree, specimen_data = specimen)
+    return render_template('dropdown_and_metadata.html', tree = tree, specimen_data = specimen_data)
 
 # specimens = table of all specimens with given donor_id
 # maps specimen ids to children
@@ -286,24 +287,6 @@ def build_tree(specimens):
     
     return trees
 
-# leads to the individual specimen page that will display the specified metadata
-# and the image of the specimen
-@app.route('/specimen-info/<specimen_name>/')
-def display_specimen(specimen_name):
-    # gets the specimen from the database based on specimen id
-    specimen = Specimen.query.filter_by(name=specimen_name).first()
-    specimen_data = populate_metadata(specimen)
-
-    # gets image name if any
-    image_url = "None"
-    image = Image.query.filter_by(specimen_id=specimen.id).first()
-    if image:
-        storage_directory = specimen.storage_directory
-        image_name = image.jp2
-        image_url = "\\" + convert_image_url(storage_directory, image_name)
-
-    return render_template('specimen.html', name = specimen.name, specimen_data = specimen_data, image_url = image_url)
-
 # converts the image url to be in windows format with backslash instead of forwardslash
 def convert_image_url(storage_directory, image_name):
     original = str(storage_directory) + str(image_name)
@@ -316,24 +299,33 @@ def display_image(image_path):
     return send_file(image_path, mimetype='image/jpeg')
 
 # gets all of the relevant metadata for the given specimen
-def populate_metadata(specimen):
+def populate_metadata(specimen_name):
+    specimen = Specimen.query.filter_by(name=specimen_name).first()
 
     specimen_data = {
         'id': specimen.id,
         'name': specimen.name, 
         'donor_id': specimen.donor_id, 
-        'parent_id': specimen.parent_id,
-        'storage_directory': specimen.storage_directory,
-        'plane_of_section': "n/a",
-        'project_name': "n/a", 
-        'structure': "n/a",
-        'parent_name': "n/a",
-        'specimen_type': "n/a",
-        'age': "n/a",
-        'organism': "n/a",
-        'image_type': "n/a",
-        'image_name': "n/a"
+        'parent_id': "None",
+        'storage_directory': "None",
+        'plane_of_section': "None",
+        'project_name': "None", 
+        'structure': "None",
+        'parent_name': "None",
+        'specimen_type': "None",
+        'age': "None",
+        'organism': "None",
+        'image_type': "None",
+        'image_name': "None",
+        'image_url': "None"
     }
+    
+    if specimen.parent_id:
+        specimen_data['parent_id'] = specimen.parent_id
+        specimen_data['parent_name'] = Specimen.query.filter_by(id=specimen.parent_id).first().name
+
+    if specimen.storage_directory:
+        specimen_data['storage_directory'] = specimen.storage_directory
     
     if specimen.plane_of_section_id: 
         specimen_data['plane_of_section'] = Plane.query.filter_by(id=specimen.plane_of_section_id).first().name
@@ -343,9 +335,6 @@ def populate_metadata(specimen):
     
     if specimen.structure_id:
         specimen_data['structure'] = Structure.query.filter_by(id=specimen.structure_id).first().name
-    
-    if specimen.parent_id:
-        specimen_data['parent_name'] = Specimen.query.filter_by(id=specimen.parent_id).first().name
 
     donor = Donor.query.filter_by(id=specimen.donor_id).first()
     if donor.age_id:
@@ -359,12 +348,20 @@ def populate_metadata(specimen):
         image_type_id = Image.query.filter_by(specimen_id=specimen.id).first().image_type_id
         specimen_data['image_type'] = ImageTypes.query.filter_by(id=image_type_id).first().name
         specimen_data['image_name'] = image.jp2
+        specimen_data['image_url'] = "\\" + convert_image_url(specimen_data['storage_directory'], specimen_data['image_name'])
 
     specimen_type = SpecimenTypesSpecimens.query.filter_by(specimen_id=specimen.id).first()
     if specimen_type:
         specimen_data['specimen_type'] = SpecimenTypes.query.filter_by(id=specimen_type.specimen_type_id).first().name
 
     return specimen_data
+
+@app.route('/get_specimen_data', methods=['POST'])
+def get_specimen_data():
+    data= request.get_json()
+    node_name = data.get('node_name')
+    specimen_data = populate_metadata(node_name)
+    return jsonify(specimen_data)
 
 if __name__ == '__main__':
     db.create_all()

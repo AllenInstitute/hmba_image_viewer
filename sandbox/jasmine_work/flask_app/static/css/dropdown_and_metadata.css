@@ -1,0 +1,70 @@
+/* Remove default bullets */
+ul, #myUL {
+    list-style-type: none;
+  }
+  
+  /* Remove margins and padding from the parent ul */
+  #myUL {
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Style the caret/arrow */
+  .caret {
+    cursor: pointer;
+    user-select: none; /* Prevent text selection */
+    display: inline-block;
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 10px solid black;
+  }
+  
+  /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+  .caret-down {
+    transform: rotate(90deg);
+  }
+  
+  /* Hide the nested list */
+  .nested {
+    display: none;
+  }
+  
+  /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+  .active {
+    display: block;
+  }
+
+  /* Style for nodes without children (leaves) */
+.bullet_point:before {
+  content: "\2022";
+  color: black;
+  display: inline-block;
+  margin-right: 6px;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover{
+  text-decoration: underline;
+}
+
+.dropdown-div {
+    background-color:rgb(204, 221, 236);
+    width: 40%;
+}
+
+.metadata-div {
+    width:60%;
+    margin-left: 30px;
+}
+
+.page {
+    display: flex; 
+    min-height: 100vh;
+}
+
+  
