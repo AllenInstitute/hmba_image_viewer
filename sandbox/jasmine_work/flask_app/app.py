@@ -287,17 +287,6 @@ def build_tree(specimens):
     
     return trees
 
-# converts the image url to be in windows format with backslash instead of forwardslash
-# def convert_image_url(storage_directory, image_name):
-#     original = str(storage_directory) + str(image_name)
-#     return original.replace("/", "\\")
-
-# retrieves the appropriate image from the network based on the given image path
-# and returns it to be rendered in html
-# @app.route('/display_image/<image_path>')
-# def display_image(image_path):
-#     return send_file(image_path, mimetype='image/jpeg')
-
 # gets all of the relevant metadata for the given specimen
 def populate_metadata(specimen_name):
     specimen = Specimen.query.filter_by(name=specimen_name).first()
