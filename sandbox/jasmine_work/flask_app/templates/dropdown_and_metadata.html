@@ -12,24 +12,31 @@ Donor Specimen List
         <div class="row pb-5">
             <div class="col-md-10 col-lg-8 mx-lg-auto mx-md-auto">
                 <h1 class="pt-5 pb-2">Donor Specimens</h1>
-                    <ul id="myUL">
-                        {% for node in tree recursive %}
-                        <li>
-                        {% if node.children %}
-                        <span class="caret"></span>
-                        <span class="clickable {% if node.has_image %}bold-text{% endif %}">{{ node.name }}</span>
-                        <ul class="nested">
-                            {{ loop(node.children) }}
-                        </ul>
-                        {% else %}
-                        <span class="bullet_point clickable {% if node.has_image %}bold-text{% endif %}">{{ node.name }}</span>
-                        {% endif %}
-                        </li>
-                        {% endfor %}
+                <h6><i>Specimens with images are in <strong> bold </strong></i></h6>
+    
+                <!-- Dropdown control button -->
+                <button id="toggleDropdown" class="btn btn-primary">Expand All</button>
+
+    
+                <ul id="myUL">
+                    {% for node in tree recursive %}
+                    <li>
+                    {% if node.children %}
+                    <span class="caret"></span>
+                    <span class="clickable {% if node.has_image %}bold-text{% endif %}">{{ node.name }}</span>
+                    <ul class="nested">
+                        {{ loop(node.children) }}
                     </ul>
+                    {% else %}
+                    <span class="bullet_point clickable {% if node.has_image %}bold-text{% endif %}">{{ node.name }}</span>
+                    {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
             </div>
         </div>
     </div>
+    
     
     
     <script src="{{ url_for('static', filename='javascript/dropdown.js') }}"></script>
