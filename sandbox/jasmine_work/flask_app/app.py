@@ -227,57 +227,14 @@ class Node:
         self.children = children if children is not None else []
 
         specimen = Specimen.query.filter_by(name=name).first()
-        self.id = specimen.id
-        self.donor_id = specimen.donor_id
-
-        self.parent_id = self.parent_name = self.storage_directory = self.plane_of_section = self.project_name = self.structure = "None"
-        if specimen.parent_id:
-            self.parent_id = specimen.parent_id
-            self.parent_name = Specimen.query.filter_by(id=specimen.parent_id).first().name
-
-        if specimen.storage_directory:
-            self.storage_directory = specimen.storage_directory
-        
-        if specimen.plane_of_section_id: 
-            self.plane_of_section = Plane.query.filter_by(id=specimen.plane_of_section_id).first().name
-        
-        if specimen.project_id:
-            self.project_name = Project.query.filter_by(id=specimen.project_id).first().name
-        
-        if specimen.structure_id:
-            self.structure = Structure.query.filter_by(id=specimen.structure_id).first().name
-
-        self.specimen_type = "None"
         specimen_type = SpecimenTypesSpecimens.query.filter_by(specimen_id=specimen.id).first()
         if specimen_type:
-            self.specimen_type = SpecimenTypes.query.filter_by(id=specimen_type.specimen_type_id).first().name
-            self.name = str(self.name) + ": " + str(self.specimen_type)
+            specimen_type = SpecimenTypes.query.filter_by(id=specimen_type.specimen_type_id).first().name
+            self.name = str(self.name) + ": " + str(specimen_type)
 
-        self.age = self.organism = "None"
-        donor = Donor.query.filter_by(id=specimen.donor_id).first()
-        if donor.age_id:
-            self.age = Age.query.filter_by(id=donor.age_id).first().name
-
-        if donor.organism_id:
-            self.organism = Organism.query.filter_by(id=donor.organism_id).first().common_name
-
-        self.image_type = self.image_name = self.image_url = "None"
-        image = Image.query.filter_by(specimen_id=specimen.id).first()
-        if image:
-            self.image_type = ImageTypes.query.filter_by(id=image.image_type_id).first().name
-            self.image_name = image.zoom
-            self.image_url = self._convert_aff("//" + str(self.storage_directory + self.image_name), image)
-
-    
-    def _convert_aff(self, img_path, image) :
-        new_url = 'http://lims2/cgi-bin/imageservice?mime=2&path=' 
-        new_url += str(img_path)
-        new_url +=  '&top=0&left=0&width='
-        new_url += str(image.height)
-        new_url += '&zoom='
-        new_url += str(image.zoom_tiers - 1)
-
-        return new_url
+        self.has_image = False
+        if Image.query.filter_by(specimen_id=specimen.id).first():
+            self.has_image = True
 
 # asks the user to enter the donor they want to see the data for
 @app.route('/', methods=['GET', 'POST'])

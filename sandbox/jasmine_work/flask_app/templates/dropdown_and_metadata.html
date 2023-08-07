@@ -17,12 +17,12 @@ Donor Specimen List
                         <li>
                         {% if node.children %}
                         <span class="caret"></span>
-                        <span class="clickable">{{ node.name }}</span>
+                        <span class="clickable {% if node.has_image %}bold-text{% endif %}">{{ node.name }}</span>
                         <ul class="nested">
                             {{ loop(node.children) }}
                         </ul>
                         {% else %}
-                        <span class="bullet_point clickable">{{ node.name }}</span>
+                        <span class="bullet_point clickable {% if node.has_image %}bold-text{% endif %}">{{ node.name }}</span>
                         {% endif %}
                         </li>
                         {% endfor %}
@@ -30,6 +30,7 @@ Donor Specimen List
             </div>
         </div>
     </div>
+    
     
     <script src="{{ url_for('static', filename='javascript/dropdown.js') }}"></script>
     
