@@ -229,8 +229,8 @@ class Node:
         specimen = Specimen.query.filter_by(name=name).first()
         specimen_type = SpecimenTypesSpecimens.query.filter_by(specimen_id=specimen.id).first()
         if specimen_type:
-            specimen_type = SpecimenTypes.query.filter_by(id=specimen_type.specimen_type_id).first().name
-            self.name = str(self.name) + ": " + str(specimen_type)
+            specimen_type_name = SpecimenTypes.query.filter_by(id=specimen_type.specimen_type_id).first().name
+            self.name = str(self.name) + ": " + str(specimen_type_name)
 
         self.has_image = False
         if Image.query.filter_by(specimen_id=specimen.id).first():
@@ -301,6 +301,8 @@ def build_tree(specimens):
 
 # gets all of the relevant metadata for the given specimen
 def populate_metadata(specimen_name):
+    # gets the specimen name without the specimen_type after it if applicable 
+    specimen_name = specimen_name.split(":", 1)[0]
     specimen = Specimen.query.filter_by(name=specimen_name).first()
 
     specimen_data = {
@@ -353,7 +355,6 @@ def populate_metadata(specimen_name):
     specimen_type = SpecimenTypesSpecimens.query.filter_by(specimen_id=specimen.id).first()
     if specimen_type:
         specimen_data['specimen_type'] = SpecimenTypes.query.filter_by(id=specimen_type.specimen_type_id).first().name
-        specimen_data['name'] = specimen_data['name'] + ": " + specimen_data['specimen_type']
 
     return specimen_data
 

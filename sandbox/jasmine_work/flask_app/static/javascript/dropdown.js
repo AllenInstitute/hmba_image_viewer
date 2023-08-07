@@ -29,7 +29,37 @@ for (i = 0; i < clickableItems.length; i++) {
 
 // Function to update specimen data on the page
 function updateSpecimenData(data) {
-    // Code
+    // Add keys and values from data to the table
+    for (let key in data) {
+        var cells = document.querySelectorAll(`td[data-key="${key}"], strong[data-key="${key}"]`);
+        cells.forEach(cell => {
+            if (cell) {
+                cell.textContent = data[key];
+            }
+        });
+    }
+
+    let placeholder = document.querySelector('#image-placeholder');
+    let imgElem = placeholder.querySelector('img'); // get image within placeholder
+
+    // If the image_url is not 'None', add or update the image
+    if (data.image_url !== 'None') {
+        if (!imgElem) {
+            // Create a new image element if it doesn't exist
+            imgElem = document.createElement('img');
+            imgElem.alt = "Specimen image";
+            imgElem.height = "550";
+            placeholder.appendChild(imgElem); // append it to placeholder
+        }
+        // Update the image source
+        imgElem.src = data.image_url;
+    } else {
+        // If there is no image for the specimen, remove the existing image if it exists
+        if (imgElem) {
+            imgElem.remove();
+        }
+    }
+
 }
 
 var toggleButton = document.getElementById("toggleDropdown");

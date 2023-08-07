@@ -22,13 +22,13 @@ Donor Specimen List
                     {% for node in tree recursive %}
                     <li>
                     {% if node.children %}
-                    <span class="caret"></span>
-                    <span class="clickable {% if node.has_image %}bold-text{% endif %}">{{ node.name }}</span>
-                    <ul class="nested">
-                        {{ loop(node.children) }}
-                    </ul>
+                        <span class="caret"></span>
+                        <span class="clickable {% if node.has_image %}bold-text{% endif %}">{{ node.name }}</span>
+                        <ul class="nested">
+                            {{ loop(node.children) }}
+                        </ul>
                     {% else %}
-                    <span class="bullet_point clickable {% if node.has_image %}bold-text{% endif %}">{{ node.name }}</span>
+                        <span class="bullet_point clickable {% if node.has_image %}bold-text{% endif %}">{{ node.name }}</span>
                     {% endif %}
                     </li>
                     {% endfor %}
@@ -36,8 +36,6 @@ Donor Specimen List
             </div>
         </div>
     </div>
-    
-    
     
     <script src="{{ url_for('static', filename='javascript/dropdown.js') }}"></script>
     
@@ -53,7 +51,8 @@ Donor Specimen List
                 <p class="lead alert alert-warning" >This is the metadata for specimen: 
                     <strong data-key="name"> {{ specimen_data.name }} </strong></p>
           
-                <p class="ml-4"><a href="{{ url_for('home') }}">Return to home.</a></p>
+                <p class="ml-4, home-button"><a href="{{ url_for('home') }}" class="btn btn-primary">Return to home</a></p>
+
 
                 <!--This is a placeholder for the image that will be rendered through javascript if the image_url is present-->
                 <!--This placeholder ensures that the image is rendered above the table-->
