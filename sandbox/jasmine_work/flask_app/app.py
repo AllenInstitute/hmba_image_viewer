@@ -318,9 +318,9 @@ def populate_metadata(specimen_name):
         'specimen_type': "None",
         'age': "None",
         'organism': "None",
-        'image_type': "None",
-        'image_name': "None",
-        'image_url': "None"
+        'image_type': ["None"],
+        'image_name': ["None"],
+        'image_url': ["None"]
     }
     
     if specimen.parent_id:
@@ -346,11 +346,20 @@ def populate_metadata(specimen_name):
     if donor.organism_id:
         specimen_data['organism'] = Organism.query.filter_by(id=donor.organism_id).first().common_name
 
-    image = Image.query.filter_by(specimen_id=specimen.id).first()
-    if image:
-        specimen_data['image_type'] = ImageTypes.query.filter_by(id=image.image_type_id).first().name
-        specimen_data['image_name'] = image.zoom
-        specimen_data['image_url'] = convert_aff("//" + str(specimen_data['storage_directory'] + specimen_data['image_name']), image)
+    images = Image.query.filter_by(specimen_id=specimen.id)
+    if images:
+        specimen_data['image_type'].clear()
+        specimen_data['image_name'].clear()
+        specimen_data['image_url'].clear()
+        for image in images:
+            print("image type: " + str(ImageTypes.query.filter_by(id=image.image_type_id).first().name))
+            specimen_data['image_type'].append(" " + ImageTypes.query.filter_by(id=image.image_type_id).first().name)
+
+            print("image name: " + str(image.zoom))
+            specimen_data['image_name'].append(" " + image.zoom)
+
+            print("image url: " + str(str(convert_aff("//" + str(specimen_data['storage_directory'] + image.zoom), image))))
+            specimen_data['image_url'].append(str(convert_aff("//" + str(specimen_data['storage_directory'] + image.zoom), image)))
 
     specimen_type = SpecimenTypesSpecimens.query.filter_by(specimen_id=specimen.id).first()
     if specimen_type:

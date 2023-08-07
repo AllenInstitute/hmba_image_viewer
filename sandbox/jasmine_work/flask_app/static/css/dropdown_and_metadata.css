@@ -48,13 +48,13 @@ margin-right: 6px;
 cursor: pointer;
 }
 
-.clickable:hover{
+.clickable:hover {
 text-decoration: underline;
 }
 
 .dropdown-div {
-  background-color:rgb(204, 221, 236);
-  width: 45%;
+background-color:rgb(204, 221, 236);
+width: 45%;
 }
 
 .metadata-div {
