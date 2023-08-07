@@ -105,19 +105,11 @@ Donor Specimen List
                         </tr>
                         <tr>
                             <th>Image Type</th>
-                            {% if specimen_data.image_type|length > 0 %}
                             <td data-key="image_type">{{ specimen_data.image_type }}</td>
-                            {% else %}
-                            <td data-key="image_type">None</td>
-                            {% endif %}
                         </tr>
                         <tr>
                             <th>Image Name</th>
-                            {% if specimen_data.image_type|length > 0 %}
                             <td data-key="image_name">{{ specimen_data.image_name }} </td>
-                            {% else %}
-                            <td data-key="image_type">None</td>
-                            {% endif %}
                         </tr>
                         
            
