@@ -64,8 +64,15 @@ Donor Specimen List
 
                 <div data-key = "image_url" class="image-container" data-images=specimen_data.image_url></div> -->
 
-                <div id = "image-placeholder"></div>
-                
+                <!-- <div id = "image-placeholder"></div> -->
+
+                <div id="carousel-container" style="display: flex; justify-content: center; align-items: center;">
+                    <button id="prev" class="hide">Prev</button>
+                    <div id="carousel" style="overflow: hidden; white-space: nowrap;">
+                        <div id="image-placeholder" style="display: flex; width: max-content;"></div>
+                    </div>
+                    <button id="next" class="hide">Next</button>
+                </div>               
                   
                     <table class="table">
                         <tr>
