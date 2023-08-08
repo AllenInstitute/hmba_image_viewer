@@ -52,7 +52,7 @@ function updateSpecimenData(data) {
             placeholder.appendChild(imgElem); // append it to placeholder
         }
         // Update the image source
-        imgElem.src = data.image_url;
+        imgElem.src = data.image_url[0];
     } else {
         // If there is no image for the specimen, remove the existing image if it exists
         if (imgElem) {
@@ -60,6 +60,58 @@ function updateSpecimenData(data) {
         }
     }
 
+    // window.addEventListener('DOMContentLoaded', (event) => {
+    //     let placeholder = document.querySelector('#image-placeholder');
+    //     let imgElem = placeholder.querySelector('img'); // get image within placeholder
+    
+    //     if (!imgElem) {
+    //         // Create a new image element if it doesn't exist
+    //         imgElem = document.createElement('img');
+    //         imgElem.alt = "Specimen image";
+    //         imgElem.height = "550";
+    //         placeholder.appendChild(imgElem); // append it to placeholder
+    //     }
+    
+    //     // Event listeners for navigation buttons
+    //     let prevButton = document.querySelector('#prev');
+    //     let nextButton = document.querySelector('#next');
+    
+    //     // Get the first element with the class "image-container"
+    //     let container = document.querySelector('.image-container');
+    
+    //     // Get the images from the data-images attribute
+    //     // Parse it to get a list of images
+    //     let images = JSON.parse(container.getAttribute('data-images'));
+    //     let counter = 0;
+    
+    //     function updateImage() {
+    //         // If there is no image for the specimen, remove the existing image if it exists
+    //         if (images[counter] === 'None') {
+    //             imgElem.remove();
+    //         } else {
+    //             imgElem.src = images[counter];
+    //         }
+    //     }
+    
+    //     prevButton.addEventListener('click', function() {
+    //         counter--;
+    //         if (counter < 0) {
+    //             counter = images.length - 1;
+    //         }
+    //         updateImage();
+    //     });
+    
+    //     nextButton.addEventListener('click', function() {
+    //         counter++;
+    //         if (counter >= images.length) {
+    //             counter = 0;
+    //         }
+    //         updateImage();
+    //     });
+    
+    //     updateImage();  // Initial image update
+    // });
+    
 }
 
 var toggleButton = document.getElementById("toggleDropdown");

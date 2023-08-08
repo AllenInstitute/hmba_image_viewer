@@ -350,13 +350,8 @@ def populate_metadata(specimen_name):
     if Image.query.filter_by(specimen_id=specimen.id).first():
         images = Image.query.filter_by(specimen_id=specimen.id)
         for image in images:
-            print("image type: " + str(ImageTypes.query.filter_by(id=image.image_type_id).first().name))
             specimen_data['image_type'].append(" " + ImageTypes.query.filter_by(id=image.image_type_id).first().name)
-
-            print("image name: " + str(image.zoom))
             specimen_data['image_name'].append(" " + image.zoom)
-
-            print("image url: " + str(str(convert_aff("//" + str(specimen_data['storage_directory'] + image.zoom), image))))
             specimen_data['image_url'].append(str(convert_aff("//" + str(specimen_data['storage_directory'] + image.zoom), image)))
     else:
         specimen_data['image_type'] = "None"
