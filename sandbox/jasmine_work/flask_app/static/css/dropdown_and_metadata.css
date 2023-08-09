@@ -58,13 +58,13 @@ width: 45%;
 }
 
 .metadata-div {
-  width:55%;
-  margin-left: 30px;
+width:55%;
+margin-left: 30px;
 }
 
 .page {
-  display: flex; 
-  min-height: 100vh;
+display: flex; 
+min-height: 100vh;
 }
 
 /* makes specimen name bold if it has an image associated with it */
