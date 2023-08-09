@@ -217,6 +217,82 @@ class SpecimenTypesSpecimens(db.Model):
     specimen_type_id = db.Column(db.String)
     specimen_id = db.Column(db.String, primary_key = True)
 
+class SubImage(db.Model):
+    __tablename__ = "sub_images"
+    id = db.Column(db.String, primary_key = True)
+    image_id = db.Column(db.String)
+    row = db.Column(db.String)
+    x = db.Column(db.String)
+    y = db.Column(db.String)
+    width = db.Column(db.String)
+    height = db.Column(db.String)
+    created_at = db.Column(db.String)
+    updated_at = db.Column(db.String)
+    image_series_id = db.Column(db.String)
+    failed = db.Column(db.String)
+    specimen_id = db.Column(db.String)
+    sub_image_qcstate_reason_id = db.Column(db.String)
+    qc_date = db.Column(db.String)
+    expression = db.Column(db.String)
+    structure_id = db.Column(db.String)
+    col = db.Column(db.String)
+    specimen_tissue_index = db.Column(db.String)
+    closest_nissl_sub_image_id = db.Column(db.String)
+    area = db.Column(db.String)
+    image_series_sub_image_index = db.Column(db.String)
+    alignment2d_id = db.Column(db.String)
+    sub_image_type_id = db.Column(db.String)
+    bounding_box_index = db.Column(db.String)
+    lims1_id = db.Column(db.String)
+    svg_upload_msg = db.Column(db.String)
+
+class ImageSeries(db.Model):
+    __tablename__ = "image_series"
+    id = db.Column(db.String, primary_key = True)
+    created_at = db.Column(db.String)
+    updated_at = db.Column(db.String)
+    position = db.Column(db.String)
+    qc_date = db.Column(db.String)
+    expression = db.Column(db.String)
+    run_group_id = db.Column(db.String)
+    specimen_id = db.Column(db.String)
+    project_id = db.Column(db.String)
+    published_at = db.Column(db.String)
+    lims1_id = db.Column(db.String)
+    storage_directory = db.Column(db.String)
+    name = db.Column(db.String)
+    workflow_state = db.Column(db.String)
+    alignment3d_id = db.Column(db.String)
+    equalization_id = db.Column(db.String)
+    type = db.Column(db.String)
+    is_stack = db.Column(db.String)
+    archive_dir = db.Column(db.String)
+
+class Slide(db.Model):
+    __tablename__ = "slides"
+    id = db.Column(db.String, primary_key = True)
+    barcode = db.Column(db.String)
+    created_at = db.Column(db.String)
+    updated_at = db.Column(db.String)
+    run_group_slide_index = db.Column(db.String)
+    slide_group_id = db.Column(db.String)
+    slide_group_index = db.Column(db.String)
+    slide_group_x_index = db.Column(db.String)
+    slide_group_y_index= db.Column(db.String)
+    qc_date = db.Column(db.String)
+    run_group_id = db.Column(db.String)
+    name = db.Column(db.String)
+    run_plan_slide_index = db.Column(db.String)
+    storage_directory = db.Column(db.String)
+    scanner_id = db.Column(db.String)
+    lims1_id = db.Column(db.String)
+    ported_from_lims1 = db.Column(db.String)
+    workflow_state = db.Column(db.String)
+    slide_registration_state_id = db.Column(db.String)
+    segmented = db.Column(db.String)
+    parent_id = db.Column(db.String)
+    slide_group_z_index = db.Column(db.String)
+
 class DonorForm(FlaskForm):
     donor = StringField('What is the name of the donor you would like to see?', validators=[DataRequired(), Length(10, 40)])
     submit = SubmitField('Submit')
@@ -318,9 +394,10 @@ def populate_metadata(specimen_name):
         'specimen_type': "None",
         'age': "None",
         'organism': "None",
-        'image_type': [],
-        'image_name': [],
-        'image_url': []
+        'image_types': [],
+        'image_names': [],
+        'image_urls': [],
+        'sub_image': []
     }
     
     if specimen.parent_id:
@@ -350,17 +427,26 @@ def populate_metadata(specimen_name):
     if Image.query.filter_by(specimen_id=specimen.id).first():
         images = Image.query.filter_by(specimen_id=specimen.id)
         for image in images:
-            specimen_data['image_type'].append(" " + ImageTypes.query.filter_by(id=image.image_type_id).first().name)
-            specimen_data['image_name'].append(" " + image.zoom)
-            specimen_data['image_url'].append(str(convert_aff("//" + str(specimen_data['storage_directory'] + image.zoom), image)))
+            specimen_data['image_types'].append(" " + ImageTypes.query.filter_by(id=image.image_type_id).first().name)
+            specimen_data['image_names'].append(" " + image.zoom)
+            specimen_data['image_urls'].append(str(convert_aff("//" + str(specimen_data['storage_directory'] + image.zoom), image)))
     else:
-        specimen_data['image_type'] = "None"
-        specimen_data['image_name'] = "None"
-        specimen_data['image_url'] = "None"
+        specimen_data['image_types'] = "None"
+        specimen_data['image_names'] = "None"
+        specimen_data['image_urls'] = "None"
 
     specimen_type = SpecimenTypesSpecimens.query.filter_by(specimen_id=specimen.id).first()
     if specimen_type:
         specimen_data['specimen_type'] = SpecimenTypes.query.filter_by(id=specimen_type.specimen_type_id).first().name
+
+    sub_images = SubImage.query.filter_by(specimen_id=specimen.id)
+    if sub_images:
+        for sub_image in sub_images:
+            image = Image.query.filter_by(id=sub_image.image_id).first()
+            image_name = image.zoom
+            storage_directory = Slide.query.filter_by(id=image.slide_id).first().storage_directory
+            print("storage directory: " + str(storage_directory))
+            print("image name: " + str(image_name))
 
     return specimen_data
 
@@ -368,7 +454,7 @@ def populate_metadata(specimen_name):
 def convert_aff(img_path, image):
     new_url = 'http://lims2/cgi-bin/imageservice?mime=2&path=' 
     new_url += str(img_path)
-    new_url +=  '&top=0&left=0&width='
+    new_url += '&top=0&left=0&width='
     new_url += str(image.height)
     new_url += '&zoom='
     new_url += str(image.zoom_tiers - 1)

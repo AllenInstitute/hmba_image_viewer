@@ -22,14 +22,13 @@ def main():
 
     # print tables in LIMS with columns with specified word in it 
     # for table_name in Base.classes.keys():
-    #     # print(table_name)
     #     for column in inspector.get_columns(table_name):
-    #         if 'specimen' in column['name']:
+    #         if 'storage_directory' in column['name']:
     #             print("table name: " + table_name)
     #             print(str(hello) + ". " + column['name'] + " type: " + str(type(column['name'])))
 
     # prints the columns of the specified table with the col type
-    for column in inspector.get_columns("specimen_types_specimens"):
+    for column in inspector.get_columns("slides"):
         print(str(hello) + ". " + column['name'] + " var: " + str(type(column['name'])))
         hello = hello + 1
 
