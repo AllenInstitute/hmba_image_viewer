@@ -39,62 +39,122 @@ function updateSpecimenData(data) {
         });
     }
 
-    // attempt to have each image open into new tab when clicked 
+    // attempt at carousel (only has one working carousel then will go away when click on another specimen)
     // let placeholder = document.querySelector('#image-placeholder');
 
-    // // If the image_url is not 'None', add or update the image
+    // // Function to initialize the carousel
+    // function initCarousel() {
+    //     $(placeholder).slick({
+    //         dots: true,
+    //         infinite: true,
+    //         speed: 500,
+    //         slidesToShow: 1,
+    //         adaptiveHeight: true
+    //     });
+    // }
+
     // if (data.image_urls !== 'None') {
-    //     // First, clear any previous images
     //     while (placeholder.firstChild) {
     //         placeholder.firstChild.remove();
     //     }
-    //     // If data.image_url is an array
-    //     if (Array.isArray(data.image_urls)) {
-    //         // Loop through each URL in the array
-    //         for (let url of data.image_urls) {
-    //             // Create a new anchor element
-    //             let anchorElem = document.createElement('a');
-    //             anchorElem.href = url; // Set the href of the anchor to the image URL
-    //             anchorElem.target = "_blank"; // Open link in a new tab
 
-    //             // Create a new img element for each URL
+    //     if (Array.isArray(data.image_urls)) {
+    //         for (let url of data.image_urls) {
+    //             let anchorElem = document.createElement('a');
+    //             anchorElem.href = url;
+    //             anchorElem.target = "_blank";
+
     //             let imgElem = document.createElement('img');
     //             imgElem.alt = "Specimen image";
-    //             imgElem.height = "550";
-    //             imgElem.src = url; // Set the source of the image to the URL
+    //             imgElem.style.height = "550px"; // Set height, width will be auto
+    //             imgElem.src = url;
 
-    //             // Append the img element to the anchor
     //             anchorElem.appendChild(imgElem);
-
-    //             // Append the anchor element to the placeholder
     //             placeholder.appendChild(anchorElem);
     //         }
     //     } else {
-    //         // If data.image_url is a single string
     //         let anchorElem = document.createElement('a');
-    //         anchorElem.href = data.image_urls; // Set the href of the anchor to the image URL
-    //         anchorElem.target = "_blank"; // Open link in a new tab
+    //         anchorElem.href = data.image_urls;
+    //         anchorElem.target = "_blank";
 
-    //         // Create a new img element
     //         let imgElem = document.createElement('img');
     //         imgElem.alt = "Specimen image";
-    //         imgElem.height = "550";
-    //         imgElem.src = data.image_urls; // Set the source of the image to the URL
+    //         imgElem.style.height = "550px";
+    //         imgElem.src = data.image_urls;
 
-    //         // Append the img element to the anchor
     //         anchorElem.appendChild(imgElem);
-
-    //         // Append the anchor element to the placeholder
     //         placeholder.appendChild(anchorElem);
     //     }
+
+    //     initCarousel(); // Initialize the carousel after appending the images
     // } else {
-    //     // If there is no image for the specimen, remove the existing image if it exists
     //     while (placeholder.firstChild) {
     //         placeholder.firstChild.remove();
     //     }
     // }
 
-    // attempt at carousel #2:
+    // Working carousel with dots under single images and multiple images
+    // let placeholder = document.querySelector('#image-placeholder');
+
+    // // Function to initialize the carousel
+    // function initCarousel() {
+    //     $(placeholder).slick({
+    //         dots: true,
+    //         infinite: true,
+    //         speed: 500,
+    //         slidesToShow: 1,
+    //         adaptiveHeight: true
+    //     });
+    // }
+
+    // // Function to destroy the carousel if it exists
+    // function destroyCarousel() {
+    //     if ($(placeholder).hasClass('slick-initialized')) {
+    //         $(placeholder).slick('unslick');
+    //     }
+    // }
+
+    // if (data.image_urls !== 'None') {
+    //     destroyCarousel(); // Destroy any existing carousel
+    //     while (placeholder.firstChild) {
+    //         placeholder.firstChild.remove();
+    //     }
+    //     if (Array.isArray(data.image_urls)) {
+    //         for (let url of data.image_urls) {
+    //             let anchorElem = document.createElement('a');
+    //             anchorElem.href = url;
+    //             anchorElem.target = "_blank";
+
+    //             let imgElem = document.createElement('img');
+    //             imgElem.alt = "Specimen image";
+    //             imgElem.style.height = "550px"; // Set height, width will be auto
+    //             imgElem.src = url;
+
+    //             anchorElem.appendChild(imgElem);
+    //             placeholder.appendChild(anchorElem);
+    //         }
+    //     } else {
+    //         let anchorElem = document.createElement('a');
+    //         anchorElem.href = data.image_urls;
+    //         anchorElem.target = "_blank";
+
+    //         let imgElem = document.createElement('img');
+    //         imgElem.alt = "Specimen image";
+    //         imgElem.style.height = "550px";
+    //         imgElem.src = data.image_urls;
+
+    //         anchorElem.appendChild(imgElem);
+    //         placeholder.appendChild(anchorElem);
+    //     }
+
+    //     initCarousel(); // Initialize the carousel after appending the images
+    // } else {
+    //     destroyCarousel();
+    //     while (placeholder.firstChild) {
+    //         placeholder.firstChild.remove();
+    //     }
+    // }
+
     let placeholder = document.querySelector('#image-placeholder');
 
     // Function to initialize the carousel
@@ -108,45 +168,59 @@ function updateSpecimenData(data) {
         });
     }
 
+    // Function to destroy the carousel if it exists
+    function destroyCarousel() {
+        if ($(placeholder).hasClass('slick-initialized')) {
+            $(placeholder).slick('unslick');
+        }
+    }
+
     if (data.image_urls !== 'None') {
+        destroyCarousel(); // Destroy any existing carousel
         while (placeholder.firstChild) {
             placeholder.firstChild.remove();
         }
-
+        
         if (Array.isArray(data.image_urls)) {
             for (let url of data.image_urls) {
                 let anchorElem = document.createElement('a');
                 anchorElem.href = url;
                 anchorElem.target = "_blank";
-
+        
                 let imgElem = document.createElement('img');
                 imgElem.alt = "Specimen image";
-                imgElem.style.height = "550px"; // Set height, width will be auto
+                imgElem.style.height = "550px"; 
                 imgElem.src = url;
-
+        
                 anchorElem.appendChild(imgElem);
                 placeholder.appendChild(anchorElem);
+            }
+        
+            // Only initialize the carousel if there's more than one image.
+            if (data.image_urls.length > 1) {
+                initCarousel();
             }
         } else {
             let anchorElem = document.createElement('a');
             anchorElem.href = data.image_urls;
             anchorElem.target = "_blank";
-
+        
             let imgElem = document.createElement('img');
             imgElem.alt = "Specimen image";
             imgElem.style.height = "550px";
             imgElem.src = data.image_urls;
-
+        
             anchorElem.appendChild(imgElem);
             placeholder.appendChild(anchorElem);
-        }
-
-        initCarousel(); // Initialize the carousel after appending the images
+        } 
     } else {
+        destroyCarousel();
         while (placeholder.firstChild) {
             placeholder.firstChild.remove();
         }
     }
+
+
 }
 
 var toggleButton = document.getElementById("toggleDropdown");
