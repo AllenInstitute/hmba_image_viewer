@@ -435,6 +435,8 @@ def populate_metadata(specimen_name):
             if slide:
                 has_sub_image = True
                 storage_dir = slide.storage_directory
+
+                # will only add the storage_directory to the list if it's not already in it
                 if (" " + storage_dir) not in specimen_data['sub_image_storage_directory']:
                     specimen_data['sub_image_storage_directory'].append(" " + storage_dir)
                     
@@ -457,10 +459,7 @@ def convert_aff(img_path, image):
     new_url += '&top=0&left=0&width='
     new_url += str(image.height)
     new_url += '&zoom='
-    # if image.zoom_tiers:
-    #     new_url += str(image.zoom_tiers - 1)
-    # else:
-    new_url += str(5)
+    new_url += str(6)
 
     return new_url
 

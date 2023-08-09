@@ -21,16 +21,16 @@ def main():
     #     print(table_name)
 
     # print tables in LIMS with columns with specified word in it 
-    # for table_name in Base.classes.keys():
-    #     for column in inspector.get_columns(table_name):
-    #         if 'storage_directory' in column['name']:
-    #             print("table name: " + table_name)
-    #             print(str(hello) + ". " + column['name'] + " type: " + str(type(column['name'])))
+    for table_name in Base.classes.keys():
+        for column in inspector.get_columns(table_name):
+            if 'treatment' in column['name']:
+                print("table name: " + table_name)
+                print("     " + column['name'] + " type: " + str(type(column['name'])))
 
     # prints the columns of the specified table with the col type
-    for column in inspector.get_columns("image_series"):
-        print(str(hello) + ". " + column['name'] + " var: " + str(type(column['name'])))
-        hello = hello + 1
+    # for column in inspector.get_columns("image_series"):
+    #     print(str(hello) + ". " + column['name'] + " var: " + str(type(column['name'])))
+    #     hello = hello + 1
 
 
 
