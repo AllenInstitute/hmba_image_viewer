@@ -459,7 +459,7 @@ def convert_aff(img_path, image):
     new_url += '&top=0&left=0&width='
     new_url += str(image.height)
     new_url += '&zoom='
-    new_url += str(6)
+    new_url += str(5)
 
     return new_url
 

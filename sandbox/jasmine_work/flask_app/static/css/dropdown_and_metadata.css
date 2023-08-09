@@ -86,3 +86,10 @@ margin-left: 0px
 .hide {
 display: none;
 }
+
+/* determines the color of the carousel buttons */
+.slick-prev:before, 
+.slick-next:before {
+  color:rgb(122, 156, 185); /* Change 'red' to any color you like */
+}
+

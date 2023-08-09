@@ -5,6 +5,10 @@ Donor Specimen List
 {% endblock %}
 
 {% block content %}
+<!-- Add slick.css -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+<!-- Add slick-theme.css (optional) -->
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css"/>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/dropdown_and_metadata.css') }}" type="text/css">
 
 <div class = "page"> 
@@ -57,6 +61,13 @@ Donor Specimen List
                 <!--This is a placeholder for the image that will be rendered through javascript if the image_url is present-->
                 <!--This placeholder ensures that the image is rendered above the table-->
                 <div id = "image-placeholder"></div>
+
+                    <!-- Add jQuery library -->
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <!-- Add slick.js -->
+                    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+                    <!-- Your JS script -->
+                    <script src="dropdown.js"></script>
 
                 <!-- <div id="carousel-container" style="display: flex; justify-content: center; align-items: center;">
                     <button id="prev" class="hide">Prev</button>
