@@ -28,7 +28,7 @@ def main():
     #             print(str(hello) + ". " + column['name'] + " type: " + str(type(column['name'])))
 
     # prints the columns of the specified table with the col type
-    for column in inspector.get_columns("slides"):
+    for column in inspector.get_columns("image_series"):
         print(str(hello) + ". " + column['name'] + " var: " + str(type(column['name'])))
         hello = hello + 1
 

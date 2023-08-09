@@ -246,28 +246,6 @@ class SubImage(db.Model):
     lims1_id = db.Column(db.String)
     svg_upload_msg = db.Column(db.String)
 
-class ImageSeries(db.Model):
-    __tablename__ = "image_series"
-    id = db.Column(db.String, primary_key = True)
-    created_at = db.Column(db.String)
-    updated_at = db.Column(db.String)
-    position = db.Column(db.String)
-    qc_date = db.Column(db.String)
-    expression = db.Column(db.String)
-    run_group_id = db.Column(db.String)
-    specimen_id = db.Column(db.String)
-    project_id = db.Column(db.String)
-    published_at = db.Column(db.String)
-    lims1_id = db.Column(db.String)
-    storage_directory = db.Column(db.String)
-    name = db.Column(db.String)
-    workflow_state = db.Column(db.String)
-    alignment3d_id = db.Column(db.String)
-    equalization_id = db.Column(db.String)
-    type = db.Column(db.String)
-    is_stack = db.Column(db.String)
-    archive_dir = db.Column(db.String)
-
 class Slide(db.Model):
     __tablename__ = "slides"
     id = db.Column(db.String, primary_key = True)
@@ -292,6 +270,13 @@ class Slide(db.Model):
     segmented = db.Column(db.String)
     parent_id = db.Column(db.String)
     slide_group_z_index = db.Column(db.String)
+
+class SubImageTypes(db.Model):
+    __tablename__ = "sub_image_types"
+    id = db.Column(db.String, primary_key = True)
+    name = db.Column(db.String)
+    created_at = db.Column(db.String)
+    updated_at = db.Column(db.String)
 
 class DonorForm(FlaskForm):
     donor = StringField('What is the name of the donor you would like to see?', validators=[DataRequired(), Length(10, 40)])
@@ -397,7 +382,8 @@ def populate_metadata(specimen_name):
         'image_types': [],
         'image_names': [],
         'image_urls': [],
-        'sub_image': []
+        'sub_image_names': [],
+        'sub_image_storage_directory': [],
     }
     
     if specimen.parent_id:
@@ -422,6 +408,10 @@ def populate_metadata(specimen_name):
     
     if donor.organism_id:
         specimen_data['organism'] = Organism.query.filter_by(id=donor.organism_id).first().common_name
+    
+    specimen_type = SpecimenTypesSpecimens.query.filter_by(specimen_id=specimen.id).first()
+    if specimen_type:
+        specimen_data['specimen_type'] = SpecimenTypes.query.filter_by(id=specimen_type.specimen_type_id).first().name
 
     # checks for presence of single image
     if Image.query.filter_by(specimen_id=specimen.id).first():
@@ -433,20 +423,23 @@ def populate_metadata(specimen_name):
     else:
         specimen_data['image_types'] = "None"
         specimen_data['image_names'] = "None"
-        specimen_data['image_urls'] = "None"
 
-    specimen_type = SpecimenTypesSpecimens.query.filter_by(specimen_id=specimen.id).first()
-    if specimen_type:
-        specimen_data['specimen_type'] = SpecimenTypes.query.filter_by(id=specimen_type.specimen_type_id).first().name
-
+    # need to make sure the type isn't "Cell" bc there are dozens of sub-images of cells that aren't needed
     sub_images = SubImage.query.filter_by(specimen_id=specimen.id)
-    if sub_images:
+    if sub_images and specimen_data['specimen_type'] != "Cell":
         for sub_image in sub_images:
             image = Image.query.filter_by(id=sub_image.image_id).first()
-            image_name = image.zoom
-            storage_directory = Slide.query.filter_by(id=image.slide_id).first().storage_directory
-            print("storage directory: " + str(storage_directory))
-            print("image name: " + str(image_name))
+            slide = Slide.query.filter_by(id=image.slide_id).first()
+            if slide:
+                storage_dir = slide.storage_directory
+                specimen_data['sub_image_names'].append(" " + image.zoom)
+                specimen_data['sub_image_storage_directory'].append(" " + storage_dir)
+                specimen_data['image_urls'].append(str(convert_aff("//" + str(storage_dir + image.zoom), sub_image)))
+    else:
+        specimen_data['sub_image_names'] = "None"
+        specimen_data['sub_image_storage_directory'] = "None"
+        if len(specimen_data['image_urls']) == 0:
+            specimen_data['image_urls'] = "None"
 
     return specimen_data
 
@@ -457,7 +450,10 @@ def convert_aff(img_path, image):
     new_url += '&top=0&left=0&width='
     new_url += str(image.height)
     new_url += '&zoom='
-    new_url += str(image.zoom_tiers - 1)
+    # if image.zoom_tiers:
+    #     new_url += str(image.zoom_tiers - 1)
+    # else:
+    new_url += str(5)
 
     return new_url
 
