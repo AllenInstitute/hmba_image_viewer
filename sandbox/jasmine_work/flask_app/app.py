@@ -289,12 +289,13 @@ class Node:
 
         specimen = Specimen.query.filter_by(name=name).first()
         specimen_type = SpecimenTypesSpecimens.query.filter_by(specimen_id=specimen.id).first()
+        specimen_type_name = "None"
         if specimen_type:
             specimen_type_name = SpecimenTypes.query.filter_by(id=specimen_type.specimen_type_id).first().name
             self.name = str(self.name) + ": " + str(specimen_type_name)
 
         self.has_image = False
-        if Image.query.filter_by(specimen_id=specimen.id).first():
+        if Image.query.filter_by(specimen_id=specimen.id).first() or (SubImage.query.filter_by(specimen_id=specimen.id).first() and specimen_type_name != "Cell"):
             self.has_image = True
 
 # asks the user to enter the donor they want to see the data for
@@ -389,9 +390,6 @@ def populate_metadata(specimen_name):
     if specimen.parent_id:
         specimen_data['parent_id'] = specimen.parent_id
         specimen_data['parent_name'] = Specimen.query.filter_by(id=specimen.parent_id).first().name
-
-    if specimen.storage_directory:
-        specimen_data['storage_directory'] = specimen.storage_directory
     
     if specimen.plane_of_section_id: 
         specimen_data['plane_of_section'] = Plane.query.filter_by(id=specimen.plane_of_section_id).first().name
@@ -412,6 +410,9 @@ def populate_metadata(specimen_name):
     specimen_type = SpecimenTypesSpecimens.query.filter_by(specimen_id=specimen.id).first()
     if specimen_type:
         specimen_data['specimen_type'] = SpecimenTypes.query.filter_by(id=specimen_type.specimen_type_id).first().name
+    
+    if specimen.storage_directory:
+        specimen_data['storage_directory'] = specimen.storage_directory
 
     # checks for presence of single image
     if Image.query.filter_by(specimen_id=specimen.id).first():
@@ -424,17 +425,20 @@ def populate_metadata(specimen_name):
         specimen_data['image_types'] = "None"
         specimen_data['image_names'] = "None"
 
-    # need to make sure the type isn't "Cell" bc there are dozens of sub-images of cells that aren't needed
     sub_images = SubImage.query.filter_by(specimen_id=specimen.id)
-    if sub_images and specimen_data['specimen_type'] != "Cell":
-        for sub_image in sub_images:
-            image = Image.query.filter_by(id=sub_image.image_id).first()
-            slide = Slide.query.filter_by(id=image.slide_id).first()
-            if slide:
-                storage_dir = slide.storage_directory
-                specimen_data['sub_image_names'].append(" " + image.zoom)
-                specimen_data['sub_image_storage_directory'].append(" " + storage_dir)
-                specimen_data['image_urls'].append(str(convert_aff("//" + str(storage_dir + image.zoom), sub_image)))
+    if sub_images:
+        # need to make sure the type isn't "Cell" bc there are dozens of sub-images of cells that aren't needed
+        if specimen_data['specimen_type'] != "Cell":
+            for sub_image in sub_images:
+                image = Image.query.filter_by(id=sub_image.image_id).first()
+                slide = Slide.query.filter_by(id=image.slide_id).first()
+                if slide:
+                    storage_dir = slide.storage_directory
+                    if (" " + storage_dir) not in specimen_data['sub_image_storage_directory']:
+                        specimen_data['sub_image_storage_directory'].append(" " + storage_dir)
+                    
+                    specimen_data['sub_image_names'].append(" " + image.zoom)
+                    specimen_data['image_urls'].append(str(convert_aff("//" + str(storage_dir + image.zoom), sub_image)))
     else:
         specimen_data['sub_image_names'] = "None"
         specimen_data['sub_image_storage_directory'] = "None"
