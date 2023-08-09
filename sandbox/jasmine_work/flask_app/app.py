@@ -384,7 +384,7 @@ def populate_metadata(specimen_name):
         'image_names': [],
         'image_urls': [],
         'sub_image_names': [],
-        'sub_image_storage_directory': [],
+        'sub_image_storage_directory': []
     }
     
     if specimen.parent_id:
@@ -425,21 +425,24 @@ def populate_metadata(specimen_name):
         specimen_data['image_types'] = "None"
         specimen_data['image_names'] = "None"
 
+    # need to make sure the type isn't "Cell" bc there are dozens of sub-images of cells that aren't needed
     sub_images = SubImage.query.filter_by(specimen_id=specimen.id)
-    if sub_images:
-        # need to make sure the type isn't "Cell" bc there are dozens of sub-images of cells that aren't needed
-        if specimen_data['specimen_type'] != "Cell":
-            for sub_image in sub_images:
-                image = Image.query.filter_by(id=sub_image.image_id).first()
-                slide = Slide.query.filter_by(id=image.slide_id).first()
-                if slide:
-                    storage_dir = slide.storage_directory
-                    if (" " + storage_dir) not in specimen_data['sub_image_storage_directory']:
-                        specimen_data['sub_image_storage_directory'].append(" " + storage_dir)
+    has_sub_image = False
+    if sub_images and specimen_data['specimen_type'] != "Cell":
+        for sub_image in sub_images:
+            image = Image.query.filter_by(id=sub_image.image_id).first()
+            slide = Slide.query.filter_by(id=image.slide_id).first()
+            if slide:
+                has_sub_image = True
+                storage_dir = slide.storage_directory
+                if (" " + storage_dir) not in specimen_data['sub_image_storage_directory']:
+                    specimen_data['sub_image_storage_directory'].append(" " + storage_dir)
                     
-                    specimen_data['sub_image_names'].append(" " + image.zoom)
-                    specimen_data['image_urls'].append(str(convert_aff("//" + str(storage_dir + image.zoom), sub_image)))
-    else:
+                specimen_data['sub_image_names'].append(" " + image.zoom)
+                specimen_data['image_urls'].append(str(convert_aff("//" + str(storage_dir + image.zoom), sub_image)))
+    
+    # makes these keys None if there are no sub_images with a storage_directory associated with them
+    if not has_sub_image:
         specimen_data['sub_image_names'] = "None"
         specimen_data['sub_image_storage_directory'] = "None"
         if len(specimen_data['image_urls']) == 0:
