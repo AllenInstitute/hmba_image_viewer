@@ -55,16 +55,20 @@ text-decoration: underline;
 .dropdown-div {
 background-color:rgb(204, 221, 236);
 width: 45%;
+overflow-y: scroll; /* vertical scroll bar */
+max-height: 100vh; /* sets max height to be screen height */
 }
 
 .metadata-div {
 width:55%;
 margin-left: 30px;
+overflow-y: scroll; /* vertical scroll bar */
+max-height: 100vh; /* sets max height to be screen height */
 }
 
 .page {
 display: flex; 
-min-height: 100vh;
+max-height: 100vh;
 }
 
 /* makes specimen name bold if it has an image associated with it */
