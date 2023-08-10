@@ -271,12 +271,50 @@ class Slide(db.Model):
     parent_id = db.Column(db.String)
     slide_group_z_index = db.Column(db.String)
 
-class SubImageTypes(db.Model):
-    __tablename__ = "sub_image_types"
+class ImageSeries(db.Model):
+    __tablename__ = "image_series"
+    id = db.Column(db.String, primary_key = True)
+    created_at = db.Column(db.String)
+    updated_at = db.Column(db.String)
+    position = db.Column(db.String)
+    qc_date = db.Column(db.String)
+    expression = db.Column(db.String)
+    run_group_id = db.Column(db.String)
+    specimen_id = db.Column(db.String)
+    project_id = db.Column(db.String)
+    published_at = db.Column(db.String)
+    lims1_id = db.Column(db.String)
+    storage_directory = db.Column(db.String)
+    name = db.Column(db.String)
+    workflow_state = db.Column(db.String)
+    alignment3d_id = db.Column(db.String)
+    equalization_id = db.Column(db.String)
+    type = db.Column(db.String)
+    is_stack = db.Column(db.String)
+    archive_dir = db.Column(db.String)
+
+class RunGroups(db.Model):
+    __tablename__ = "run_groups"
+    id = db.Column(db.String, primary_key = True)
+    runplan_id = db.Column(db.String)
+    run_group_type_id = db.Column(db.String)
+    created_at = db.Column(db.String)
+    updated_at = db.Column(db.String)
+    name = db.Column(db.String)
+    comments = db.Column(db.String)
+    qc_date = db.Column(db.String)
+    run_group_state_id = db.Column(db.String)
+    lims1_id = db.Column(db.String)
+    workflow_state = db.Column(db.String)
+    treatment_id = db.Column(db.String)
+
+class Treatment(db.Model):
+    __tablename__ = "treatments"
     id = db.Column(db.String, primary_key = True)
     name = db.Column(db.String)
     created_at = db.Column(db.String)
     updated_at = db.Column(db.String)
+    public = db.Column(db.String)
 
 class DonorForm(FlaskForm):
     donor = StringField('What is the name of the donor you would like to see?', validators=[DataRequired(), Length(10, 40)])
@@ -384,7 +422,8 @@ def populate_metadata(specimen_name):
         'image_names': [],
         'image_urls': [],
         'sub_image_names': [],
-        'sub_image_storage_directory': []
+        'sub_image_storage_directory': [],
+        'treatment': []
     }
     
     if specimen.parent_id:
@@ -435,6 +474,16 @@ def populate_metadata(specimen_name):
             if slide:
                 has_sub_image = True
                 storage_dir = slide.storage_directory
+                
+                image_series = ImageSeries.query.filter_by(id=sub_image.image_series_id).first()
+                if image_series:
+                    run_group = RunGroups.query.filter_by(id=image_series.run_group_id).first()
+                    if run_group:
+                        treatment = Treatment.query.filter_by(id=run_group.treatment_id).first()
+                        if treatment:
+                            specimen_data['treatment'].append(treatment.name)
+                        else:
+                            specimen_data['treatment'] = "None"
 
                 # will only add the storage_directory to the list if it's not already in it
                 if (" " + storage_dir) not in specimen_data['sub_image_storage_directory']:

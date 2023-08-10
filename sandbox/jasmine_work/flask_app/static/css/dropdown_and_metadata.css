@@ -101,5 +101,28 @@ display: none;
 margin-left: 25px;
 }
 
+.image-container {
+position: relative;
+display: inline-block;
+}
+
+.image-overlay {
+display: none;
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0,0,0,0.3); /* Semi-transparent black */
+color: white;
+text-align: center;
+padding-top: 50%; /* center the text vertically */
+}
+
+.image-container:hover .image-overlay {
+display: block;
+}
+
+
 
 

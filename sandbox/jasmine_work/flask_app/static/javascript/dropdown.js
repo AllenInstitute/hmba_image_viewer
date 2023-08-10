@@ -38,18 +38,172 @@ function updateSpecimenData(data) {
             }
         });
     }
+    // working carousel!
+    // let placeholder = document.querySelector('#image-placeholder');
+
+    // // Fallback image URL
+    // const FALLBACK_IMAGE_URL = "/static/Images/ErrorImage.JPG";
+    
+    // // // Function to handle image load errors
+    // function handleImageError(imgElem) {
+    //     imgElem.src = FALLBACK_IMAGE_URL;
+    // }
+    
+    // // Function to initialize the carousel
+    // function initCarousel() {
+    //     $(placeholder).slick({
+    //         dots: true,
+    //         infinite: true,
+    //         speed: 500,
+    //         slidesToShow: 1,
+    //         adaptiveHeight: true
+    //     });
+    // }
+    
+    // // Function to destroy the carousel if it exists
+    // function destroyCarousel() {
+    //     if ($(placeholder).hasClass('slick-initialized')) {
+    //         $(placeholder).slick('unslick');
+    //     }
+    // }
+    
+    // if (data.image_urls !== 'None') {
+    //     destroyCarousel(); // Destroy any existing carousel
+    //     while (placeholder.firstChild) {
+    //         placeholder.firstChild.remove();
+    //     }
+        
+    //     if (Array.isArray(data.image_urls)) {
+    //         for (let url of data.image_urls) {
+    //             let anchorElem = document.createElement('a');
+    //             anchorElem.href = url;
+    //             anchorElem.target = "_blank";
+        
+    //             let imgElem = document.createElement('img');
+    //             imgElem.alt = "Specimen image";
+    //             // imgElem.title = "Your hover text here";
+    //             imgElem.style.height = "550px"; 
+    //             imgElem.src = url;
+    
+    //             // Add an error listener to the image
+    //             imgElem.onerror = function() { handleImageError(imgElem); };
+        
+    //             anchorElem.appendChild(imgElem);
+    //             placeholder.appendChild(anchorElem);
+    //         }
+    
+    //         // Only initialize the carousel if there's more than one image.
+    //         if (data.image_urls.length > 1) {
+    //             initCarousel();
+    //         }
+    //     } else {
+    //         let anchorElem = document.createElement('a');
+    //         anchorElem.href = data.image_urls;
+    //         anchorElem.target = "_blank";
+        
+    //         let imgElem = document.createElement('img');
+    //         imgElem.alt = "Specimen image";
+    //         // imgElem.title = "Your hover text here";
+    //         imgElem.style.height = "550px";
+    //         imgElem.src = data.image_urls;
+    
+    //         // Add an error listener to the image
+    //         imgElem.onerror = function() { handleImageError(imgElem); };
+        
+    //         anchorElem.appendChild(imgElem);
+    //         placeholder.appendChild(anchorElem);
+    //     } 
+    // } else {
+    //     destroyCarousel();
+    //     while (placeholder.firstChild) {
+    //         placeholder.firstChild.remove();
+    //     }
+    // }
+
+    // hover attempt #1
+    // let placeholder = document.querySelector('#image-placeholder');
+
+    // const FALLBACK_IMAGE_URL = "/static/Images/ErrorImage.JPG";
+
+    // function handleImageError(imgElem) {
+    //     imgElem.src = FALLBACK_IMAGE_URL;
+    // }
+
+    // function initCarousel() {
+    //     $(placeholder).slick({
+    //         dots: true,
+    //         infinite: true,
+    //         speed: 500,
+    //         slidesToShow: 1,
+    //         adaptiveHeight: true
+    //     });
+    // }
+
+    // function destroyCarousel() {
+    //     if ($(placeholder).hasClass('slick-initialized')) {
+    //         $(placeholder).slick('unslick');
+    //     }
+    // }
+
+    // if (data.image_urls !== 'None') {
+    //     destroyCarousel(); // Destroy any existing carousel
+    //     while (placeholder.firstChild) {
+    //         placeholder.firstChild.remove();
+    //     }
+
+    //     const createImageContainer = (url) => {
+    //         let containerDiv = document.createElement('div');
+    //         containerDiv.className = "image-container";
+
+    //         let anchorElem = document.createElement('a');
+    //         anchorElem.href = url;
+    //         anchorElem.target = "_blank";
+
+    //         let imgElem = document.createElement('img');
+    //         imgElem.alt = "Specimen image";
+    //         imgElem.style.height = "550px"; 
+    //         imgElem.src = url;
+    //         imgElem.onerror = function() { handleImageError(imgElem); };
+
+    //         let overlayDiv = document.createElement('div');
+    //         overlayDiv.className = "image-overlay";
+    //         overlayDiv.innerHTML = "HELLO";
+
+    //         anchorElem.appendChild(imgElem);
+    //         containerDiv.appendChild(anchorElem);
+    //         containerDiv.appendChild(overlayDiv);
+            
+    //         return containerDiv;
+    //     };
+
+    //     if (Array.isArray(data.image_urls)) {
+    //         for (let url of data.image_urls) {
+    //             placeholder.appendChild(createImageContainer(url));
+    //         }
+
+    //         // Only initialize the carousel if there's more than one image.
+    //         if (data.image_urls.length > 1) {
+    //             initCarousel();
+    //         }
+    //     } else {
+    //         placeholder.appendChild(createImageContainer(data.image_urls));
+    //     } 
+
+    // } else {
+    //     destroyCarousel();
+    //     while (placeholder.firstChild) {
+    //         placeholder.firstChild.remove();
+    //     }
+    // }
 
     let placeholder = document.querySelector('#image-placeholder');
 
-    // Fallback image URL
     const FALLBACK_IMAGE_URL = "/static/Images/ErrorImage.JPG";
     
-    // // Function to handle image load errors
     function handleImageError(imgElem) {
         imgElem.src = FALLBACK_IMAGE_URL;
     }
     
-    // Function to initialize the carousel
     function initCarousel() {
         $(placeholder).slick({
             dots: true,
@@ -60,35 +214,49 @@ function updateSpecimenData(data) {
         });
     }
     
-    // Function to destroy the carousel if it exists
     function destroyCarousel() {
         if ($(placeholder).hasClass('slick-initialized')) {
             $(placeholder).slick('unslick');
         }
     }
     
+    const createImageContainer = (url, hoverText) => {
+        let containerDiv = document.createElement('div');
+        containerDiv.className = "image-container";
+    
+        let anchorElem = document.createElement('a');
+        anchorElem.href = url;
+        anchorElem.target = "_blank";
+    
+        let imgElem = document.createElement('img');
+        imgElem.alt = "Specimen image";
+        imgElem.style.height = "550px"; 
+        imgElem.src = url;
+        imgElem.onerror = function() { handleImageError(imgElem); };
+    
+        anchorElem.appendChild(imgElem);
+        containerDiv.appendChild(anchorElem);
+    
+        if (hoverText) {  // Only append the overlay if there's hover text
+            let overlayDiv = document.createElement('div');
+            overlayDiv.className = "image-overlay";
+            overlayDiv.innerHTML = hoverText;
+            containerDiv.appendChild(overlayDiv);
+        }
+    
+        return containerDiv;
+    };
+    
     if (data.image_urls !== 'None') {
         destroyCarousel(); // Destroy any existing carousel
         while (placeholder.firstChild) {
             placeholder.firstChild.remove();
         }
-        
-        if (Array.isArray(data.image_urls)) {
-            for (let url of data.image_urls) {
-                let anchorElem = document.createElement('a');
-                anchorElem.href = url;
-                anchorElem.target = "_blank";
-        
-                let imgElem = document.createElement('img');
-                imgElem.alt = "Specimen image";
-                imgElem.style.height = "550px"; 
-                imgElem.src = url;
     
-                // Add an error listener to the image
-                imgElem.onerror = function() { handleImageError(imgElem); };
-        
-                anchorElem.appendChild(imgElem);
-                placeholder.appendChild(anchorElem);
+        if (Array.isArray(data.image_urls)) {
+            for (let i = 0; i < data.image_urls.length; i++) {
+                let hoverData = data.treatment[i] && data.treatment[i] !== "None" ? data.treatment[i] : ""; 
+                placeholder.appendChild(createImageContainer(data.image_urls[i], hoverData));
             }
     
             // Only initialize the carousel if there's more than one image.
@@ -96,21 +264,11 @@ function updateSpecimenData(data) {
                 initCarousel();
             }
         } else {
-            let anchorElem = document.createElement('a');
-            anchorElem.href = data.image_urls;
-            anchorElem.target = "_blank";
-        
-            let imgElem = document.createElement('img');
-            imgElem.alt = "Specimen image";
-            imgElem.style.height = "550px";
-            imgElem.src = data.image_urls;
-    
-            // Add an error listener to the image
-            imgElem.onerror = function() { handleImageError(imgElem); };
-        
-            anchorElem.appendChild(imgElem);
-            placeholder.appendChild(anchorElem);
+            // For the single image case, check the first treatment if it exists
+            let hoverData = data.treatment && data.treatment[0] !== "None" ? data.treatment[0] : ""; 
+            placeholder.appendChild(createImageContainer(data.image_urls, hoverData));
         } 
+    
     } else {
         destroyCarousel();
         while (placeholder.firstChild) {
@@ -118,6 +276,7 @@ function updateSpecimenData(data) {
         }
     }
     
+
 
 }
 
