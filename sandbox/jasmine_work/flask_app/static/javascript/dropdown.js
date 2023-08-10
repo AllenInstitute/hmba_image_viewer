@@ -41,6 +41,14 @@ function updateSpecimenData(data) {
 
     let placeholder = document.querySelector('#image-placeholder');
 
+    // Fallback image URL
+    const FALLBACK_IMAGE_URL = "/static/Images/ErrorImage.JPG";
+    
+    // // Function to handle image load errors
+    function handleImageError(imgElem) {
+        imgElem.src = FALLBACK_IMAGE_URL;
+    }
+    
     // Function to initialize the carousel
     function initCarousel() {
         $(placeholder).slick({
@@ -51,14 +59,14 @@ function updateSpecimenData(data) {
             adaptiveHeight: true
         });
     }
-
+    
     // Function to destroy the carousel if it exists
     function destroyCarousel() {
         if ($(placeholder).hasClass('slick-initialized')) {
             $(placeholder).slick('unslick');
         }
     }
-
+    
     if (data.image_urls !== 'None') {
         destroyCarousel(); // Destroy any existing carousel
         while (placeholder.firstChild) {
@@ -75,11 +83,14 @@ function updateSpecimenData(data) {
                 imgElem.alt = "Specimen image";
                 imgElem.style.height = "550px"; 
                 imgElem.src = url;
+    
+                // Add an error listener to the image
+                imgElem.onerror = function() { handleImageError(imgElem); };
         
                 anchorElem.appendChild(imgElem);
                 placeholder.appendChild(anchorElem);
             }
-        
+    
             // Only initialize the carousel if there's more than one image.
             if (data.image_urls.length > 1) {
                 initCarousel();
@@ -93,6 +104,9 @@ function updateSpecimenData(data) {
             imgElem.alt = "Specimen image";
             imgElem.style.height = "550px";
             imgElem.src = data.image_urls;
+    
+            // Add an error listener to the image
+            imgElem.onerror = function() { handleImageError(imgElem); };
         
             anchorElem.appendChild(imgElem);
             placeholder.appendChild(anchorElem);
@@ -103,7 +117,7 @@ function updateSpecimenData(data) {
             placeholder.firstChild.remove();
         }
     }
-
+    
 
 }
 
