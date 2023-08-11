@@ -80,15 +80,24 @@ function updateSpecimenData(data) {
         anchorElem.appendChild(imgElem);
         containerDiv.appendChild(anchorElem);
     
-        if (hoverText && hoverText !== "None") {  // Only append the overlay if there's hover text and it's not "None"
+        if (hoverText && hoverText !== "None") {  
             let overlayDiv = document.createElement('div');
             overlayDiv.className = "image-overlay";
             overlayDiv.innerHTML = hoverText;
-            containerDiv.appendChild(overlayDiv);
+    
+            // Create another anchor for the overlay
+            let overlayAnchor = document.createElement('a');
+            overlayAnchor.href = url;
+            overlayAnchor.target = "_blank";
+            overlayAnchor.style.display = 'block'; // To make entire overlay clickable
+            overlayAnchor.appendChild(overlayDiv);
+    
+            containerDiv.appendChild(overlayAnchor);
         }
     
         return containerDiv;
     };
+    
     
     if (data.image_urls && data.image_urls !== 'None') {
         destroyCarousel();
@@ -112,10 +121,6 @@ function updateSpecimenData(data) {
             placeholder.firstChild.remove();
         }
     }
-    
-    
-
-
 }
 
 var toggleButton = document.getElementById("toggleDropdown");

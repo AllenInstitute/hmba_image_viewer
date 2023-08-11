@@ -355,9 +355,9 @@ def home():
             # calls specimen method
             return redirect(url_for('specimens', donor_name=donor.name))
         else:
-            donors = Donor.query.all()
+            donors = Donor.query.order_by(Donor.name).all()
             for donor in donors:
-                if donor_name in donor.name:
+                if donor.name.startswith(donor_name):
                     possible_donors.append(donor.name)
             message = "That donor is not in our database"
 
