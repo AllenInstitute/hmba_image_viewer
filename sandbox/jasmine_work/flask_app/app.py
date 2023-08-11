@@ -423,7 +423,7 @@ def populate_metadata(specimen_name):
         'image_urls': [],
         'sub_image_names': [],
         'sub_image_storage_directory': [],
-        'treatment': []
+        'treatment': {}
     }
     
     if specimen.parent_id:
@@ -459,7 +459,11 @@ def populate_metadata(specimen_name):
         for image in images:
             specimen_data['image_types'].append(" " + ImageTypes.query.filter_by(id=image.image_type_id).first().name)
             specimen_data['image_names'].append(" " + image.zoom)
-            specimen_data['image_urls'].append(str(convert_aff("//" + str(specimen_data['storage_directory'] + image.zoom), image)))
+            image_url = str(convert_aff("//" + str(specimen_data['storage_directory'] + image.zoom), image))
+            specimen_data['image_urls'].append(image_url)
+
+            # there will never be a treatment associated with these types of images
+            specimen_data['treatment'][image_url] = "None"
     else:
         specimen_data['image_types'] = "None"
         specimen_data['image_names'] = "None"
@@ -474,23 +478,27 @@ def populate_metadata(specimen_name):
             if slide:
                 has_sub_image = True
                 storage_dir = slide.storage_directory
-                
-                image_series = ImageSeries.query.filter_by(id=sub_image.image_series_id).first()
-                if image_series:
-                    run_group = RunGroups.query.filter_by(id=image_series.run_group_id).first()
-                    if run_group:
-                        treatment = Treatment.query.filter_by(id=run_group.treatment_id).first()
-                        if treatment:
-                            specimen_data['treatment'].append(treatment.name)
-                        else:
-                            specimen_data['treatment'] = "None"
 
                 # will only add the storage_directory to the list if it's not already in it
                 if (" " + storage_dir) not in specimen_data['sub_image_storage_directory']:
                     specimen_data['sub_image_storage_directory'].append(" " + storage_dir)
                     
                 specimen_data['sub_image_names'].append(" " + image.zoom)
-                specimen_data['image_urls'].append(str(convert_aff("//" + str(storage_dir + image.zoom), sub_image)))
+
+                image_url = str(convert_aff("//" + str(storage_dir + image.zoom), sub_image))
+                specimen_data['image_urls'].append(image_url)
+
+                # series of checks and joins to get to the treatment for each sub_image
+                image_series = ImageSeries.query.filter_by(id=sub_image.image_series_id).first()
+                if image_series:
+                    run_group = RunGroups.query.filter_by(id=image_series.run_group_id).first()
+                    if run_group:
+                        treatment = Treatment.query.filter_by(id=run_group.treatment_id).first()
+                        if treatment:
+                            # maps the image url to the corresponding treatment
+                            specimen_data['treatment'][image_url] = treatment.name
+                        else:
+                            specimen_data['treatment'] = "None"
     
     # makes these keys None if there are no sub_images with a storage_directory associated with them
     if not has_sub_image:
