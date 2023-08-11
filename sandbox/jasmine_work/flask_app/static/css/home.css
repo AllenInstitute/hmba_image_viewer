@@ -1,0 +1,24 @@
+.message {
+    margin-top: 10px;
+    margin-bottom: 50px;
+}
+
+.clickable:hover td {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px; 
+}
+
+table, th, td {
+    border: 1px solid rgb(79, 107, 131);
+}
+
+th, td {
+    padding: 8px 12px;
+    text-align: left;
+}

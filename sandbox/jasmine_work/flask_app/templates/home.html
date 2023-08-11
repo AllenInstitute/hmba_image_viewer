@@ -8,11 +8,8 @@ Donors
 
 {% block content %}
 
-<!--
-	TIPS about using Bootstrap-Flask:
-	https://github.com/helloflask/bootstrap-flask
-	https://bootstrap-flask.readthedocs.io/
--->
+<link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}" type="text/css">
+<script src="{{ url_for('static', filename='javascript/home.js') }}"></script>
 
 <div class="container">
   <div class="row">
@@ -24,10 +21,28 @@ Donors
 
       {{ render_form(form) }}
 
-      <p class="pt-5"><strong>{{ message }}</strong></p>
+      <div class="message"> 
+        {% if possible_donors|length > 0 %}
+          <table>
+            <thead>
+              <tr>
+                <th>Donors</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for donor in possible_donors %}
+                <tr class="clickable" onclick="redirectToDonorPage('{{ donor }}');">
+                  <td>{{ donor }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p class="pt-5"><strong>{{ message }}</strong></p>
+        {% endif %}
+      </div>
 
     </div>
-  </div>
 </div>
 
 {% endblock %}

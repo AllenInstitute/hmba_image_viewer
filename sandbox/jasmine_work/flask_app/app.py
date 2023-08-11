@@ -317,7 +317,7 @@ class Treatment(db.Model):
     public = db.Column(db.String)
 
 class DonorForm(FlaskForm):
-    donor = StringField('What is the name of the donor you would like to see?', validators=[DataRequired(), Length(10, 40)])
+    donor = StringField('What is the name of the donor you would like to see?', validators=[DataRequired(), Length(1, 40)])
     submit = SubmitField('Submit')
 
 class Node:
@@ -339,13 +339,12 @@ class Node:
 # asks the user to enter the donor they want to see the data for
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    # gets table of all donors in LIMS
-    donors = Donor.query.all()
+    possible_donors = []
     message = ""
 
     form = DonorForm()
     if form.validate_on_submit():
-        donor_name = form.donor.data
+        donor_name = form.donor.data.upper()
 
         # gets the donor that matches the requested donor id
         donor = Donor.query.filter_by(name = donor_name).first()
@@ -354,15 +353,22 @@ def home():
 
             # goes to appropriate specimen page based on donor id 
             # calls specimen method
-            return redirect(url_for('specimens', donor_id=donor.id))
+            return redirect(url_for('specimens', donor_name=donor.name))
         else:
+            donors = Donor.query.all()
+            for donor in donors:
+                if donor_name in donor.name:
+                    possible_donors.append(donor.name)
             message = "That donor is not in our database"
-    return render_template('home.html',donors=donors, form=form, message=message)
+
+    return render_template('home.html', form=form, message=message, possible_donors=possible_donors)
 
 # builds the parent-child relationship between specimens 
 # generates dropdown menu with hierarchy built in through flattened data
-@app.route('/specimens/<donor_id>/')
-def specimens(donor_id):
+@app.route('/specimens/<donor_name>/')
+def specimens(donor_name):
+
+    donor_id = Donor.query.filter_by(name = donor_name).first().id
 
     # get table of specimens matching given donor id (has all columns!)
     specimens = Specimen.query.filter_by(donor_id=donor_id).order_by(Specimen.name)
