@@ -123,6 +123,11 @@ padding-top: 50%; /* center the text vertically */
 display: block;
 }
 
+/* makes the exit button cursor in the lightbox regular */
+/* gets rid of the minimizer cursor that is automatic with the lightbox library */
+.mfp-close {
+cursor: pointer !important;
+}
 
 
 
