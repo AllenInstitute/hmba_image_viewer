@@ -39,6 +39,7 @@ function updateSpecimenData(data) {
         });
     }
 
+    // lightbox where can click on images and will open in new tab and be zoomable
     // let placeholder = document.querySelector('#image-placeholder');
 
     // const FALLBACK_IMAGE_URL = "/static/Images/ErrorImage.JPG";
@@ -55,105 +56,13 @@ function updateSpecimenData(data) {
     //         slidesToShow: 1,
     //         adaptiveHeight: true
     //     });
-    // }
-
-    // function destroyCarousel() {
-    //     if ($(placeholder).hasClass('slick-initialized')) {
-    //         $(placeholder).slick('unslick');
-    //     }
-    // }
-
-    // function initLightbox() {
-    //     $('.image-popup').magnificPopup({
-    //         items: data.image_urls.map(image => {
-    //             let treatment = data.treatment[image] ? data.treatment[image] : "";  // Fetch associated treatment
-    //             return {
-    //                 src: image,
-    //                 title: treatment  // Pass the treatment as the title for the lightbox
-    //             };
-    //         }), 
-    //         type: 'image',
-    //         gallery: {
-    //             enabled: true
-    //         }
+    
+    //     $(placeholder).on('click', '.slick-slide', function() {
+    //         const currentSlideIndex = $(this).data('slick-index');
+    //         openLightboxAt(currentSlideIndex);
     //     });
-    // }
-
-    // const createImageContainer = (url, hoverText) => {
-    //     let containerDiv = document.createElement('div');
-    //     containerDiv.className = "image-container";
-
-    //     let anchorElem = document.createElement('a');
-    //     anchorElem.href = url;
-    //     anchorElem.className = "image-popup";
-
-    //     let imgElem = document.createElement('img');
-    //     imgElem.alt = "Specimen image";
-    //     imgElem.style.height = "550px"; 
-    //     imgElem.src = url;
-    //     imgElem.onerror = function() { handleImageError(imgElem); };
-
-    //     anchorElem.appendChild(imgElem);
-    //     containerDiv.appendChild(anchorElem);
-
-    //     if (hoverText && hoverText !== "None") {  
-    //         let overlayDiv = document.createElement('div');
-    //         overlayDiv.className = "image-overlay";
-    //         overlayDiv.innerHTML = hoverText;
-
-    //         let overlayAnchor = document.createElement('a');
-    //         overlayAnchor.href = url;
-    //         overlayAnchor.className = 'image-popup';  // Add this class to ensure it opens in lightbox
-    //         overlayAnchor.style.display = 'block';
-    //         overlayAnchor.appendChild(overlayDiv);
-
-    //         containerDiv.appendChild(overlayAnchor);
-    //     }
-
-    //     return containerDiv;
-    // };
-
-    // if (data.image_urls && data.image_urls !== 'None') {
-    //     destroyCarousel();
-    //     while (placeholder.firstChild) {
-    //         placeholder.firstChild.remove();
-    //     }
-
-    //     for (let imageUrl of data.image_urls) {
-    //         let hoverData = data.treatment[imageUrl] ? data.treatment[imageUrl] : "";
-    //         placeholder.appendChild(createImageContainer(imageUrl, hoverData));
-    //     }
-
-    //     initLightbox();
-    //     if (data.image_urls.length > 1) {
-    //         initCarousel();
-    //     }
-
-    // } else {
-    //     destroyCarousel();
-    //     while (placeholder.firstChild) {
-    //         placeholder.firstChild.remove();
-    //     }
     // }
     
-    // download attempt #1 (opens images in another tab or in same tab instead)
-    // let placeholder = document.querySelector('#image-placeholder');
-
-    // const FALLBACK_IMAGE_URL = "/static/Images/ErrorImage.JPG";
-
-    // function handleImageError(imgElem) {
-    //     imgElem.src = FALLBACK_IMAGE_URL;
-    // }
-
-    // function initCarousel() {
-    //     $(placeholder).slick({
-    //         dots: true,
-    //         infinite: true,
-    //         speed: 500,
-    //         slidesToShow: 1,
-    //         adaptiveHeight: true
-    //     });
-    // }
 
     // function destroyCarousel() {
     //     if ($(placeholder).hasClass('slick-initialized')) {
@@ -164,7 +73,7 @@ function updateSpecimenData(data) {
     // function initLightbox() {
     //     $('.image-popup').magnificPopup({
     //         items: data.image_urls.map(image => {
-    //             let treatment = data.treatment[image] ? data.treatment[image] : "";
+    //             let treatment = data.treatment[image] ? data.treatment[image] : "";  
     //             return {
     //                 src: image,
     //                 title: treatment
@@ -175,14 +84,25 @@ function updateSpecimenData(data) {
     //             enabled: true
     //         },
     //         callbacks: {
-    //             markupParse: function(template, values, item) {
-    //                 // Add the download button to the lightbox's template
-    //                 template.find('.mfp-title').after('<button onclick="window.open(\'' + item.src + '\', \'_blank\')">Download</button>');
+    //             open: function() {
+    //                 $('.mfp-figure').on('click', function(e) {
+    //                     if ($(e.target).closest('.mfp-close').length) {
+    //                         // If the click came from the close button, just return without doing anything
+    //                         return;
+    //                     }
+    
+    //                     e.stopPropagation();  // Prevent any other click handlers on this event
+    //                     let imageUrl = $(this).find('img').attr('src');
+    //                     window.open(imageUrl, '_blank');
+    //                 });
+    //             },
+    //             close: function() {
+    //                 $('.mfp-figure').off('click');
     //             }
     //         }
     //     });
     // }    
-
+    
     // const createImageContainer = (url, hoverText) => {
     //     let containerDiv = document.createElement('div');
     //     containerDiv.className = "image-container";
@@ -190,6 +110,7 @@ function updateSpecimenData(data) {
     //     let anchorElem = document.createElement('a');
     //     anchorElem.href = url;
     //     anchorElem.className = "image-popup";
+    //     anchorElem.target = "_blank";  // Open link in a new tab
     
     //     let imgElem = document.createElement('img');
     //     imgElem.alt = "Specimen image";
@@ -200,25 +121,6 @@ function updateSpecimenData(data) {
     //     anchorElem.appendChild(imgElem);
     //     containerDiv.appendChild(anchorElem);
     
-    //     // Adding the Download button
-    //     let downloadBtn = document.createElement('button');
-    //     downloadBtn.innerHTML = "Download";
-    //     downloadBtn.className = "download-btn";
-    //     downloadBtn.addEventListener('click', function(event) {
-    //         event.stopPropagation();  // Stop propagation to avoid triggering other click events
-        
-    //         // Create a temporary anchor element to download the image
-    //         let tempLink = document.createElement('a');
-    //         tempLink.href = url;
-    //         tempLink.download = ''; // The browser will suggest a filename based on the URL's final segment, or you can provide a custom name
-    //         tempLink.style.display = 'none'; // Hide it
-    //         document.body.appendChild(tempLink); // Add to the body temporarily
-    //         tempLink.click(); // Trigger the download
-    //         document.body.removeChild(tempLink); // Remove the temporary link
-    //     });
-    //     containerDiv.appendChild(downloadBtn);
-        
-    
     //     if (hoverText && hoverText !== "None") {  
     //         let overlayDiv = document.createElement('div');
     //         overlayDiv.className = "image-overlay";
@@ -226,7 +128,7 @@ function updateSpecimenData(data) {
     
     //         let overlayAnchor = document.createElement('a');
     //         overlayAnchor.href = url;
-    //         overlayAnchor.className = 'image-popup';  // Add this class to ensure it opens in lightbox
+    //         overlayAnchor.className = 'image-popup';
     //         overlayAnchor.style.display = 'block';
     //         overlayAnchor.appendChild(overlayDiv);
     
@@ -261,13 +163,12 @@ function updateSpecimenData(data) {
     // }
 
     let placeholder = document.querySelector('#image-placeholder');
-
     const FALLBACK_IMAGE_URL = "/static/Images/ErrorImage.JPG";
-
+    
     function handleImageError(imgElem) {
         imgElem.src = FALLBACK_IMAGE_URL;
     }
-
+    
     function initCarousel() {
         $(placeholder).slick({
             dots: true,
@@ -276,16 +177,22 @@ function updateSpecimenData(data) {
             slidesToShow: 1,
             adaptiveHeight: true
         });
+    
+        $(placeholder).on('click', '.slick-slide', function(e) {
+            e.preventDefault(); 
+            const currentSlideIndex = $(this).data('slick-index');
+            openLightboxAt(currentSlideIndex);
+        });
     }
-
+    
     function destroyCarousel() {
         if ($(placeholder).hasClass('slick-initialized')) {
             $(placeholder).slick('unslick');
         }
     }
-
-    function initLightbox() {
-        $('.image-popup').magnificPopup({
+    
+    function openLightboxAt(index) {
+        $.magnificPopup.open({
             items: data.image_urls.map(image => {
                 let treatment = data.treatment[image] ? data.treatment[image] : "";  
                 return {
@@ -301,11 +208,10 @@ function updateSpecimenData(data) {
                 open: function() {
                     $('.mfp-figure').on('click', function(e) {
                         if ($(e.target).closest('.mfp-close').length) {
-                            // If the click came from the close button, just return without doing anything
                             return;
                         }
     
-                        e.stopPropagation();  // Prevent any other click handlers on this event
+                        e.stopPropagation();
                         let imageUrl = $(this).find('img').attr('src');
                         window.open(imageUrl, '_blank');
                     });
@@ -314,8 +220,8 @@ function updateSpecimenData(data) {
                     $('.mfp-figure').off('click');
                 }
             }
-        });
-    }    
+        }, index);
+    }
     
     const createImageContainer = (url, hoverText) => {
         let containerDiv = document.createElement('div');
@@ -324,7 +230,13 @@ function updateSpecimenData(data) {
         let anchorElem = document.createElement('a');
         anchorElem.href = url;
         anchorElem.className = "image-popup";
-        anchorElem.target = "_blank";  // Open link in a new tab
+        anchorElem.target = "_blank";
+    
+        anchorElem.addEventListener('click', function(e) {
+            e.preventDefault();
+            const index = data.image_urls.indexOf(url);
+            openLightboxAt(index);
+        });
     
         let imgElem = document.createElement('img');
         imgElem.alt = "Specimen image";
@@ -352,29 +264,34 @@ function updateSpecimenData(data) {
         return containerDiv;
     };
     
-
     if (data.image_urls && data.image_urls !== 'None') {
         destroyCarousel();
         while (placeholder.firstChild) {
             placeholder.firstChild.remove();
         }
-
+    
         for (let imageUrl of data.image_urls) {
             let hoverData = data.treatment[imageUrl] ? data.treatment[imageUrl] : "";
             placeholder.appendChild(createImageContainer(imageUrl, hoverData));
         }
-
-        initLightbox();
+    
         if (data.image_urls.length > 1) {
             initCarousel();
+        } else if (data.image_urls.length === 1) {
+            $(placeholder).find('.image-popup').on('click', function(e) {
+                e.preventDefault();
+                openLightboxAt(0);
+            });
         }
-
+    
     } else {
         destroyCarousel();
         while (placeholder.firstChild) {
             placeholder.firstChild.remove();
         }
     }
+    
+    
     
 }
 
