@@ -39,6 +39,90 @@ function updateSpecimenData(data) {
         });
     }
 
+    // carousel fully working, images still getting cut off though
+    // let placeholder = document.querySelector('#image-placeholder');
+
+    // const FALLBACK_IMAGE_URL = "/static/Images/ErrorImage.JPG";
+    
+    // function handleImageError(imgElem) {
+    //     imgElem.src = FALLBACK_IMAGE_URL;
+    // }
+    
+    // function initCarousel() {
+    //     $(placeholder).slick({
+    //         dots: true,
+    //         infinite: true,
+    //         speed: 500,
+    //         slidesToShow: 1,
+    //         adaptiveHeight: true
+    //     });
+    // }
+    
+    // function destroyCarousel() {
+    //     if ($(placeholder).hasClass('slick-initialized')) {
+    //         $(placeholder).slick('unslick');
+    //     }
+    // }
+    
+    // const createImageContainer = (url, hoverText) => {
+    //     let containerDiv = document.createElement('div');
+    //     containerDiv.className = "image-container";
+    
+    //     let anchorElem = document.createElement('a');
+    //     anchorElem.href = url;
+    //     anchorElem.target = "_blank";
+    
+    //     let imgElem = document.createElement('img');
+    //     imgElem.alt = "Specimen image";
+    //     imgElem.style.height = "550px"; 
+    //     imgElem.src = url;
+    //     imgElem.onerror = function() { handleImageError(imgElem); };
+    
+    //     anchorElem.appendChild(imgElem);
+    //     containerDiv.appendChild(anchorElem);
+    
+    //     if (hoverText && hoverText !== "None") {  
+    //         let overlayDiv = document.createElement('div');
+    //         overlayDiv.className = "image-overlay";
+    //         overlayDiv.innerHTML = hoverText;
+    
+    //         // Create another anchor for the overlay
+    //         let overlayAnchor = document.createElement('a');
+    //         overlayAnchor.href = url;
+    //         overlayAnchor.target = "_blank";
+    //         overlayAnchor.style.display = 'block'; // To make entire overlay clickable
+    //         overlayAnchor.appendChild(overlayDiv);
+    
+    //         containerDiv.appendChild(overlayAnchor);
+    //     }
+    
+    //     return containerDiv;
+    // };
+    
+    
+    // if (data.image_urls && data.image_urls !== 'None') {
+    //     destroyCarousel();
+    //     while (placeholder.firstChild) {
+    //         placeholder.firstChild.remove();
+    //     }
+    
+    //     for (let imageUrl of data.image_urls) {
+    //         let hoverData = data.treatment[imageUrl] ? data.treatment[imageUrl] : "";
+    //         placeholder.appendChild(createImageContainer(imageUrl, hoverData));
+    //     }
+    
+    //     // Only initialize the carousel if there's more than one image.
+    //     if (data.image_urls.length > 1) {
+    //         initCarousel();
+    //     }
+    
+    // } else {
+    //     destroyCarousel();
+    //     while (placeholder.firstChild) {
+    //         placeholder.firstChild.remove();
+    //     }
+    // }
+
     let placeholder = document.querySelector('#image-placeholder');
 
     const FALLBACK_IMAGE_URL = "/static/Images/ErrorImage.JPG";
@@ -61,6 +145,22 @@ function updateSpecimenData(data) {
         if ($(placeholder).hasClass('slick-initialized')) {
             $(placeholder).slick('unslick');
         }
+    
+        // Remove the "Expand" button if it exists
+        let expandButton = document.querySelector('.expand-carousel');
+        if (expandButton) {
+            expandButton.remove();
+        }
+    }
+    
+    
+    function initLightbox() {
+        $('.image-popup').magnificPopup({
+            type: 'image',
+            gallery:{
+                enabled:true
+            }
+        });
     }
     
     const createImageContainer = (url, hoverText) => {
@@ -69,7 +169,7 @@ function updateSpecimenData(data) {
     
         let anchorElem = document.createElement('a');
         anchorElem.href = url;
-        anchorElem.target = "_blank";
+        anchorElem.className = "image-popup";
     
         let imgElem = document.createElement('img');
         imgElem.alt = "Specimen image";
@@ -85,11 +185,10 @@ function updateSpecimenData(data) {
             overlayDiv.className = "image-overlay";
             overlayDiv.innerHTML = hoverText;
     
-            // Create another anchor for the overlay
             let overlayAnchor = document.createElement('a');
             overlayAnchor.href = url;
             overlayAnchor.target = "_blank";
-            overlayAnchor.style.display = 'block'; // To make entire overlay clickable
+            overlayAnchor.style.display = 'block';
             overlayAnchor.appendChild(overlayDiv);
     
             containerDiv.appendChild(overlayAnchor);
@@ -97,7 +196,6 @@ function updateSpecimenData(data) {
     
         return containerDiv;
     };
-    
     
     if (data.image_urls && data.image_urls !== 'None') {
         destroyCarousel();
@@ -110,10 +208,23 @@ function updateSpecimenData(data) {
             placeholder.appendChild(createImageContainer(imageUrl, hoverData));
         }
     
-        // Only initialize the carousel if there's more than one image.
         if (data.image_urls.length > 1) {
             initCarousel();
+            initLightbox();
         }
+    
+        // Add the expand button after the carousel images are loaded
+        let expandButton = document.createElement('button');
+        expandButton.textContent = "Expand";
+        expandButton.className = "expand-carousel";
+        expandButton.onclick = function() {
+            $.magnificPopup.open({
+                items: data.image_urls.map(image => ({ src: image })),
+                type: 'image',
+                gallery: { enabled: true }
+            });
+        };
+        placeholder.parentNode.insertBefore(expandButton, placeholder.nextSibling);
     
     } else {
         destroyCarousel();
@@ -121,6 +232,7 @@ function updateSpecimenData(data) {
             placeholder.firstChild.remove();
         }
     }
+    
 }
 
 var toggleButton = document.getElementById("toggleDropdown");

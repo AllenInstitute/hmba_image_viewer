@@ -123,6 +123,23 @@ padding-top: 50%; /* center the text vertically */
 display: block;
 }
 
+/* expand button design */
+.expand-carousel {
+display: block;
+margin: 20px auto;
+padding: 10px 15px;
+background-color: #007bff;
+color: #ffffff;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+transition: background-color 0.3s, transform 0.3s;
+}
+
+.expand-carousel:hover {
+background-color: #0056b3;
+}
+
 
 
 
