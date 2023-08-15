@@ -38,15 +38,14 @@ function updateSpecimenData(data) {
             }
         });
     }
-
-    // working download button only outside of lightbox
+    // download button both in and outside of lightbox
     // let placeholder = document.querySelector('#image-placeholder');
     // const FALLBACK_IMAGE_URL = "/static/Images/ErrorImage.JPG";
-
+    
     // function handleImageError(imgElem) {
     //     imgElem.src = FALLBACK_IMAGE_URL;
     // }
-
+    
     // function initCarousel() {
     //     $(placeholder).slick({
     //         dots: true,
@@ -55,27 +54,27 @@ function updateSpecimenData(data) {
     //         slidesToShow: 1,
     //         adaptiveHeight: true
     //     });
-
+    
     //     $(placeholder).on('click', '.slick-slide', function(e) {
     //         e.preventDefault(); 
     //         const currentSlideIndex = $(this).data('slick-index');
     //         openLightboxAt(currentSlideIndex);
     //     });
     // }
-
+    
     // function destroyCarousel() {
     //     if ($(placeholder).hasClass('slick-initialized')) {
     //         $(placeholder).slick('unslick');
     //     }
     // }
-
+    
     // function openLightboxAt(index) {
     //     $.magnificPopup.open({
     //         items: data.image_urls.map(image => {
     //             let treatment = data.treatment[image] ? data.treatment[image] : "";  
     //             return {
     //                 src: image,
-    //                 title: treatment
+    //                 title: treatment + '<a href="#" class="lightbox-download-btn">Download</a>'
     //             };
     //         }), 
     //         type: 'image',
@@ -85,21 +84,32 @@ function updateSpecimenData(data) {
     //         callbacks: {
     //             open: function() {
     //                 $('.mfp-figure').on('click', function(e) {
-    //                     if ($(e.target).closest('.mfp-close').length) {
+    //                     if ($(e.target).closest('.mfp-close').length || $(e.target).closest('.lightbox-download-btn').length) {
     //                         return;
     //                     }
     //                     e.stopPropagation();
     //                     let imageUrl = $(this).find('img').attr('src');
     //                     window.open(imageUrl, '_blank');
     //                 });
+    
+    //                 // Delegate listener for download buttons
+    //                 $('body').on('click', '.lightbox-download-btn', function(e) {
+    //                     e.preventDefault();
+    //                     e.stopPropagation();
+    //                     let imageUrl = $('.mfp-img').attr('src');
+    //                     let activeSlideIndex = data.image_urls.indexOf(imageUrl); 
+    //                     let filename = data.all_image_names[activeSlideIndex].replace('.aff', '') + ".jpg";
+    //                     downloadImage(imageUrl, filename);
+    //                 });
     //             },
     //             close: function() {
     //                 $('.mfp-figure').off('click');
+    //                 $('body').off('click', '.lightbox-download-btn'); // Unbind the download button delegate event
     //             }
     //         }
     //     }, index);
     // }
-
+    
     // function downloadImage(url, filename) {
     //     fetch(url)
     //         .then(response => response.blob())
@@ -112,18 +122,16 @@ function updateSpecimenData(data) {
     //             document.body.removeChild(link);
     //         });
     // }
-
+    
     // function downloadCurrentImage() {
     //     let activeSlide = $(placeholder).slick('slickCurrentSlide');
     //     let currentImageUrl = data.image_urls[activeSlide];
-        
-    //     // Derive the filename from all_image_names, replacing .aff with .jpg
+    
     //     let filename = data.all_image_names[activeSlide].replace('.aff', '') + ".jpg";
-
-    //     // Trigger the download
+    
     //     downloadImage(currentImageUrl, filename);
     // }
-
+    
     // const createImageContainer = (url, hoverText) => {
     //     let containerDiv = document.createElement('div');
     //     containerDiv.className = "image-container";
@@ -164,43 +172,43 @@ function updateSpecimenData(data) {
     
     //     return containerDiv;
     // };
-
+    
     // if (data.image_urls && data.image_urls !== 'None') {
     //     destroyCarousel();
-
+    
     //     while (placeholder.firstChild) {
     //         placeholder.firstChild.remove();
     //     }
-
+    
     //     for (let imageUrl of data.image_urls) {
     //         let hoverData = data.treatment[imageUrl] ? data.treatment[imageUrl] : "";
     //         placeholder.appendChild(createImageContainer(imageUrl, hoverData));
     //     }
-
+    
     //     if (data.image_urls.length > 1) {
     //         initCarousel();
-
+    
     //         let downloadButton = document.createElement('a');
     //         downloadButton.href = "#";
     //         downloadButton.textContent = "Download";
     //         downloadButton.className = "btn";
     //         downloadButton.id = "download-button";
-
+    
     //         downloadButton.addEventListener('click', function(e) {
     //             e.preventDefault();
     //             e.stopPropagation();
     //             downloadCurrentImage();
     //         });
-
+    
     //         placeholder.appendChild(downloadButton);
-
+    
     //     } else if (data.image_urls.length === 1) {
     //         $(placeholder).find('.image-popup').on('click', function(e) {
     //             e.preventDefault();
     //             openLightboxAt(0);
     //         });
     //     }
-
+    
     // } else {
     //     destroyCarousel();
     //     while (placeholder.firstChild) {
@@ -240,10 +248,14 @@ function updateSpecimenData(data) {
     function openLightboxAt(index) {
         $.magnificPopup.open({
             items: data.image_urls.map(image => {
-                let treatment = data.treatment[image] ? data.treatment[image] : "";  
+                let treatment = data.treatment[image] || "";  
+                let title = '<a href="#" class="lightbox-download-btn">Download</a>';
+                if (treatment && treatment !== "None") {
+                    title = treatment + ' ' + title;
+                }
                 return {
                     src: image,
-                    title: treatment + '<a href="#" class="lightbox-download-btn">Download</a>'
+                    title: title
                 };
             }), 
             type: 'image',
@@ -385,7 +397,7 @@ function updateSpecimenData(data) {
         }
     }
     
-        
+    
     
 }
 
