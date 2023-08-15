@@ -94,7 +94,7 @@ display: none;
 /* determines the color of the carousel buttons */
 .slick-prev:before, 
 .slick-next:before {
-  color:rgb(122, 156, 185); /* Change 'red' to any color you like */
+  color:rgb(122, 156, 185);
 }
 
 #image-placeholder {
@@ -127,6 +127,32 @@ display: block;
 /* gets rid of the minimizer cursor that is automatic with the lightbox library */
 .mfp-close {
 cursor: pointer !important;
+}
+
+/* button styling */
+.btn {
+margin-top: 10px;
+display: inline-block;
+font-weight: 400;
+color: #fff;
+text-align: center;
+vertical-align: middle;
+user-select: none;
+background-color: #007bff; 
+border: 1px solid #007bff;
+padding: 0.375rem 0.75rem;
+font-size: 1rem;
+line-height: 1.5;
+border-radius: 0.25rem;
+cursor: pointer;
+text-decoration: None;
+}
+
+.btn:hover {
+background-color: #0056b3; /* darker shade for hover */
+border-color: #004a99;
+text-decoration: None;
+color: White
 }
 
 

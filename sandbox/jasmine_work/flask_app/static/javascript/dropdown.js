@@ -39,15 +39,14 @@ function updateSpecimenData(data) {
         });
     }
 
-    // lightbox where can click on images and will open in new tab and be zoomable
+    //fully working lightbox wtih clickable images that lead to new tab
     // let placeholder = document.querySelector('#image-placeholder');
-
     // const FALLBACK_IMAGE_URL = "/static/Images/ErrorImage.JPG";
-
+    
     // function handleImageError(imgElem) {
     //     imgElem.src = FALLBACK_IMAGE_URL;
     // }
-
+    
     // function initCarousel() {
     //     $(placeholder).slick({
     //         dots: true,
@@ -57,21 +56,21 @@ function updateSpecimenData(data) {
     //         adaptiveHeight: true
     //     });
     
-    //     $(placeholder).on('click', '.slick-slide', function() {
+    //     $(placeholder).on('click', '.slick-slide', function(e) {
+    //         e.preventDefault(); 
     //         const currentSlideIndex = $(this).data('slick-index');
     //         openLightboxAt(currentSlideIndex);
     //     });
     // }
     
-
     // function destroyCarousel() {
     //     if ($(placeholder).hasClass('slick-initialized')) {
     //         $(placeholder).slick('unslick');
     //     }
     // }
-
-    // function initLightbox() {
-    //     $('.image-popup').magnificPopup({
+    
+    // function openLightboxAt(index) {
+    //     $.magnificPopup.open({
     //         items: data.image_urls.map(image => {
     //             let treatment = data.treatment[image] ? data.treatment[image] : "";  
     //             return {
@@ -87,11 +86,10 @@ function updateSpecimenData(data) {
     //             open: function() {
     //                 $('.mfp-figure').on('click', function(e) {
     //                     if ($(e.target).closest('.mfp-close').length) {
-    //                         // If the click came from the close button, just return without doing anything
     //                         return;
     //                     }
     
-    //                     e.stopPropagation();  // Prevent any other click handlers on this event
+    //                     e.stopPropagation();
     //                     let imageUrl = $(this).find('img').attr('src');
     //                     window.open(imageUrl, '_blank');
     //                 });
@@ -100,8 +98,8 @@ function updateSpecimenData(data) {
     //                 $('.mfp-figure').off('click');
     //             }
     //         }
-    //     });
-    // }    
+    //     }, index);
+    // }
     
     // const createImageContainer = (url, hoverText) => {
     //     let containerDiv = document.createElement('div');
@@ -110,7 +108,13 @@ function updateSpecimenData(data) {
     //     let anchorElem = document.createElement('a');
     //     anchorElem.href = url;
     //     anchorElem.className = "image-popup";
-    //     anchorElem.target = "_blank";  // Open link in a new tab
+    //     anchorElem.target = "_blank";
+    
+    //     anchorElem.addEventListener('click', function(e) {
+    //         e.preventDefault();
+    //         const index = data.image_urls.indexOf(url);
+    //         openLightboxAt(index);
+    //     });
     
     //     let imgElem = document.createElement('img');
     //     imgElem.alt = "Specimen image";
@@ -138,23 +142,26 @@ function updateSpecimenData(data) {
     //     return containerDiv;
     // };
     
-
     // if (data.image_urls && data.image_urls !== 'None') {
     //     destroyCarousel();
     //     while (placeholder.firstChild) {
     //         placeholder.firstChild.remove();
     //     }
-
+    
     //     for (let imageUrl of data.image_urls) {
     //         let hoverData = data.treatment[imageUrl] ? data.treatment[imageUrl] : "";
     //         placeholder.appendChild(createImageContainer(imageUrl, hoverData));
     //     }
-
-    //     initLightbox();
+    
     //     if (data.image_urls.length > 1) {
     //         initCarousel();
+    //     } else if (data.image_urls.length === 1) {
+    //         $(placeholder).find('.image-popup').on('click', function(e) {
+    //             e.preventDefault();
+    //             openLightboxAt(0);
+    //         });
     //     }
-
+    
     // } else {
     //     destroyCarousel();
     //     while (placeholder.firstChild) {
@@ -210,7 +217,6 @@ function updateSpecimenData(data) {
                         if ($(e.target).closest('.mfp-close').length) {
                             return;
                         }
-    
                         e.stopPropagation();
                         let imageUrl = $(this).find('img').attr('src');
                         window.open(imageUrl, '_blank');
@@ -221,6 +227,32 @@ function updateSpecimenData(data) {
                 }
             }
         }, index);
+    }
+    
+    function getFilenameFromUrl(url) {
+        return url.split('/').pop();
+    }
+    
+    function downloadImage(url) {
+        fetch(url)
+            .then(response => response.blob())
+            .then(blob => {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = getFilenameFromUrl(url);
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+    }
+    
+    function downloadCurrentImage() {
+        // Fetch the currently active slide's image URL
+        let activeSlide = $(placeholder).slick('slickCurrentSlide');
+        let currentImageUrl = data.image_urls[activeSlide];
+    
+        // Trigger the download
+        downloadImage(currentImageUrl);
     }
     
     const createImageContainer = (url, hoverText) => {
@@ -266,6 +298,7 @@ function updateSpecimenData(data) {
     
     if (data.image_urls && data.image_urls !== 'None') {
         destroyCarousel();
+    
         while (placeholder.firstChild) {
             placeholder.firstChild.remove();
         }
@@ -277,6 +310,21 @@ function updateSpecimenData(data) {
     
         if (data.image_urls.length > 1) {
             initCarousel();
+    
+            // Add a single download button beneath the carousel
+            let downloadButton = document.createElement('a');
+            downloadButton.href = "#";
+            downloadButton.textContent = "Download";
+            downloadButton.className = "btn";
+    
+            downloadButton.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                downloadCurrentImage();
+            });
+    
+            placeholder.appendChild(downloadButton);
+    
         } else if (data.image_urls.length === 1) {
             $(placeholder).find('.image-popup').on('click', function(e) {
                 e.preventDefault();
@@ -293,6 +341,10 @@ function updateSpecimenData(data) {
     
     
     
+    
+    
+
+
 }
 
 var toggleButton = document.getElementById("toggleDropdown");
