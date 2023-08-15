@@ -39,143 +39,13 @@ function updateSpecimenData(data) {
         });
     }
 
-    //fully working lightbox wtih clickable images that lead to new tab
-    // let placeholder = document.querySelector('#image-placeholder');
-    // const FALLBACK_IMAGE_URL = "/static/Images/ErrorImage.JPG";
-    
-    // function handleImageError(imgElem) {
-    //     imgElem.src = FALLBACK_IMAGE_URL;
-    // }
-    
-    // function initCarousel() {
-    //     $(placeholder).slick({
-    //         dots: true,
-    //         infinite: true,
-    //         speed: 500,
-    //         slidesToShow: 1,
-    //         adaptiveHeight: true
-    //     });
-    
-    //     $(placeholder).on('click', '.slick-slide', function(e) {
-    //         e.preventDefault(); 
-    //         const currentSlideIndex = $(this).data('slick-index');
-    //         openLightboxAt(currentSlideIndex);
-    //     });
-    // }
-    
-    // function destroyCarousel() {
-    //     if ($(placeholder).hasClass('slick-initialized')) {
-    //         $(placeholder).slick('unslick');
-    //     }
-    // }
-    
-    // function openLightboxAt(index) {
-    //     $.magnificPopup.open({
-    //         items: data.image_urls.map(image => {
-    //             let treatment = data.treatment[image] ? data.treatment[image] : "";  
-    //             return {
-    //                 src: image,
-    //                 title: treatment
-    //             };
-    //         }), 
-    //         type: 'image',
-    //         gallery: {
-    //             enabled: true
-    //         },
-    //         callbacks: {
-    //             open: function() {
-    //                 $('.mfp-figure').on('click', function(e) {
-    //                     if ($(e.target).closest('.mfp-close').length) {
-    //                         return;
-    //                     }
-    
-    //                     e.stopPropagation();
-    //                     let imageUrl = $(this).find('img').attr('src');
-    //                     window.open(imageUrl, '_blank');
-    //                 });
-    //             },
-    //             close: function() {
-    //                 $('.mfp-figure').off('click');
-    //             }
-    //         }
-    //     }, index);
-    // }
-    
-    // const createImageContainer = (url, hoverText) => {
-    //     let containerDiv = document.createElement('div');
-    //     containerDiv.className = "image-container";
-    
-    //     let anchorElem = document.createElement('a');
-    //     anchorElem.href = url;
-    //     anchorElem.className = "image-popup";
-    //     anchorElem.target = "_blank";
-    
-    //     anchorElem.addEventListener('click', function(e) {
-    //         e.preventDefault();
-    //         const index = data.image_urls.indexOf(url);
-    //         openLightboxAt(index);
-    //     });
-    
-    //     let imgElem = document.createElement('img');
-    //     imgElem.alt = "Specimen image";
-    //     imgElem.style.height = "550px"; 
-    //     imgElem.src = url;
-    //     imgElem.onerror = function() { handleImageError(imgElem); };
-    
-    //     anchorElem.appendChild(imgElem);
-    //     containerDiv.appendChild(anchorElem);
-    
-    //     if (hoverText && hoverText !== "None") {  
-    //         let overlayDiv = document.createElement('div');
-    //         overlayDiv.className = "image-overlay";
-    //         overlayDiv.innerHTML = hoverText;
-    
-    //         let overlayAnchor = document.createElement('a');
-    //         overlayAnchor.href = url;
-    //         overlayAnchor.className = 'image-popup';
-    //         overlayAnchor.style.display = 'block';
-    //         overlayAnchor.appendChild(overlayDiv);
-    
-    //         containerDiv.appendChild(overlayAnchor);
-    //     }
-    
-    //     return containerDiv;
-    // };
-    
-    // if (data.image_urls && data.image_urls !== 'None') {
-    //     destroyCarousel();
-    //     while (placeholder.firstChild) {
-    //         placeholder.firstChild.remove();
-    //     }
-    
-    //     for (let imageUrl of data.image_urls) {
-    //         let hoverData = data.treatment[imageUrl] ? data.treatment[imageUrl] : "";
-    //         placeholder.appendChild(createImageContainer(imageUrl, hoverData));
-    //     }
-    
-    //     if (data.image_urls.length > 1) {
-    //         initCarousel();
-    //     } else if (data.image_urls.length === 1) {
-    //         $(placeholder).find('.image-popup').on('click', function(e) {
-    //             e.preventDefault();
-    //             openLightboxAt(0);
-    //         });
-    //     }
-    
-    // } else {
-    //     destroyCarousel();
-    //     while (placeholder.firstChild) {
-    //         placeholder.firstChild.remove();
-    //     }
-    // }
-
     let placeholder = document.querySelector('#image-placeholder');
     const FALLBACK_IMAGE_URL = "/static/Images/ErrorImage.JPG";
-    
+
     function handleImageError(imgElem) {
         imgElem.src = FALLBACK_IMAGE_URL;
     }
-    
+
     function initCarousel() {
         $(placeholder).slick({
             dots: true,
@@ -184,20 +54,20 @@ function updateSpecimenData(data) {
             slidesToShow: 1,
             adaptiveHeight: true
         });
-    
+
         $(placeholder).on('click', '.slick-slide', function(e) {
             e.preventDefault(); 
             const currentSlideIndex = $(this).data('slick-index');
             openLightboxAt(currentSlideIndex);
         });
     }
-    
+
     function destroyCarousel() {
         if ($(placeholder).hasClass('slick-initialized')) {
             $(placeholder).slick('unslick');
         }
     }
-    
+
     function openLightboxAt(index) {
         $.magnificPopup.open({
             items: data.image_urls.map(image => {
@@ -228,33 +98,31 @@ function updateSpecimenData(data) {
             }
         }, index);
     }
-    
-    function getFilenameFromUrl(url) {
-        return url.split('/').pop();
-    }
-    
-    function downloadImage(url) {
+
+    function downloadImage(url, filename) {
         fetch(url)
             .then(response => response.blob())
             .then(blob => {
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = getFilenameFromUrl(url);
+                link.download = filename;
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
             });
     }
-    
+
     function downloadCurrentImage() {
-        // Fetch the currently active slide's image URL
         let activeSlide = $(placeholder).slick('slickCurrentSlide');
         let currentImageUrl = data.image_urls[activeSlide];
-    
+        
+        // Derive the filename from all_image_names, replacing .aff with .jpg
+        let filename = data.all_image_names[activeSlide].replace('.aff', '') + ".jpg";
+
         // Trigger the download
-        downloadImage(currentImageUrl);
+        downloadImage(currentImageUrl, filename);
     }
-    
+
     const createImageContainer = (url, hoverText) => {
         let containerDiv = document.createElement('div');
         containerDiv.className = "image-container";
@@ -295,56 +163,53 @@ function updateSpecimenData(data) {
     
         return containerDiv;
     };
-    
+
     if (data.image_urls && data.image_urls !== 'None') {
         destroyCarousel();
-    
+
         while (placeholder.firstChild) {
             placeholder.firstChild.remove();
         }
-    
+
         for (let imageUrl of data.image_urls) {
             let hoverData = data.treatment[imageUrl] ? data.treatment[imageUrl] : "";
             placeholder.appendChild(createImageContainer(imageUrl, hoverData));
         }
-    
+
         if (data.image_urls.length > 1) {
             initCarousel();
-    
-            // Add a single download button beneath the carousel
+
             let downloadButton = document.createElement('a');
             downloadButton.href = "#";
             downloadButton.textContent = "Download";
             downloadButton.className = "btn";
-    
+            downloadButton.id = "download-button";
+
             downloadButton.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 downloadCurrentImage();
             });
-    
+
             placeholder.appendChild(downloadButton);
-    
+
         } else if (data.image_urls.length === 1) {
             $(placeholder).find('.image-popup').on('click', function(e) {
                 e.preventDefault();
                 openLightboxAt(0);
             });
         }
-    
+
     } else {
         destroyCarousel();
         while (placeholder.firstChild) {
             placeholder.firstChild.remove();
         }
     }
-    
-    
-    
-    
-    
 
-
+    
+    
+    
 }
 
 var toggleButton = document.getElementById("toggleDropdown");

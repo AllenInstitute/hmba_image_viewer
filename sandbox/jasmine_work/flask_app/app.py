@@ -429,7 +429,8 @@ def populate_metadata(specimen_name):
         'image_urls': [],
         'sub_image_names': [],
         'sub_image_storage_directory': [],
-        'treatment': {}
+        'treatment': {}, 
+        'all_image_names': []
     }
     
     if specimen.parent_id:
@@ -464,6 +465,7 @@ def populate_metadata(specimen_name):
         images = Image.query.filter_by(specimen_id=specimen.id)
         for image in images:
             specimen_data['image_types'].append(" " + ImageTypes.query.filter_by(id=image.image_type_id).first().name)
+            specimen_data['all_image_names'].append(image.zoom)
             specimen_data['image_names'].append(" " + image.zoom)
             image_url = str(convert_aff("//" + str(specimen_data['storage_directory'] + image.zoom), image))
             specimen_data['image_urls'].append(image_url)
@@ -490,6 +492,7 @@ def populate_metadata(specimen_name):
                     specimen_data['sub_image_storage_directory'].append(" " + storage_dir)
                     
                 specimen_data['sub_image_names'].append(" " + image.zoom)
+                specimen_data['all_image_names'].append(image.zoom)
 
                 image_url = str(convert_aff("//" + str(storage_dir + image.zoom), sub_image))
                 specimen_data['image_urls'].append(image_url)
