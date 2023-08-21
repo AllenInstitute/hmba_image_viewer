@@ -343,7 +343,7 @@ def home():
     message = ""
 
     form = DonorForm()
-    if form.validate_on_submit():
+    if form.validate_on_submit(): 
         donor_name = form.donor.data.upper()
 
         # gets the donor that matches the requested donor id
@@ -364,7 +364,7 @@ def home():
     return render_template('home.html', form=form, message=message, possible_donors=possible_donors)
 
 # builds the parent-child relationship between specimens 
-# generates dropdown menu with hierarchy built in through flattened data
+# generates dropdown menu with specimen metadata
 @app.route('/specimens/<donor_name>/')
 def specimens(donor_name):
 
