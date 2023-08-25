@@ -54,7 +54,7 @@ function updateSpecimenData(data) {
     // returns list of altered urls with zooms from 6-0 inclusive
     function generateAlteredUrls(originalUrl) {
         let alteredUrls = [];
-        const charactersToTry = "6543210"; // Starts at 6 and ends at 0
+        const charactersToTry = "6543210"; 
     
         for (let i = 0; i < charactersToTry.length; i++) {
             const alteredUrl = originalUrl.slice(0, -1) + charactersToTry[i];
@@ -68,7 +68,6 @@ function updateSpecimenData(data) {
     // will update the image url with the highest zoom that is valid
     function tryNextUrl(imgElem, urls, originalUrl) {
         if (urls.length === 0) {
-            // All URL alterations failed, use fallback
             imgElem.src = FALLBACK_IMAGE_URL;
             return;
         }
@@ -76,8 +75,9 @@ function updateSpecimenData(data) {
         const nextUrl = urls.shift();
         imgElem.onerror = function() { tryNextUrl(imgElem, urls, originalUrl); };
         imgElem.src = nextUrl;
+        imgElem.dataset.finalUrl = nextUrl; // Store the final used URL
+        imgElem.dataset.originalUrl = originalUrl; // Store the original URL for reference
     
-        // Update data model
         const index = data.image_urls.indexOf(originalUrl);
         if (index !== -1) {
             data.image_urls[index] = nextUrl;
@@ -105,7 +105,6 @@ function updateSpecimenData(data) {
             const currentSlideIndex = $(this).data('slick-index');
             openLightboxAt(currentSlideIndex);
         });
-        
     }
     
     function destroyCarousel() {
@@ -116,9 +115,16 @@ function updateSpecimenData(data) {
     
     // opens the image lightbox on the current image in the carousel
     function openLightboxAt(index) {
-        // Use direct mapping of data.image_urls for the lightbox items
-        $.magnificPopup.open({
-            items: data.image_urls.map(image => {
+        // Use the dataset finalUrl for the lightbox items
+        let uniqueUrls = new Set();  // Use a Set to keep track of unique URLs
+        let items = Array.from(placeholder.querySelectorAll('img'))
+            .filter(img => {
+                const isUnique = !uniqueUrls.has(img.dataset.finalUrl);
+                uniqueUrls.add(img.dataset.finalUrl);
+                return isUnique;
+            })
+            .map(img => {
+                const image = img.dataset.finalUrl;
                 let treatment = data.treatment[image] || "";  
                 let title = '<a href="#" class="lightbox-download-btn">Download</a>';
                 if (treatment && treatment !== "None") {
@@ -128,7 +134,10 @@ function updateSpecimenData(data) {
                     src: image,
                     title: title
                 };
-            }),
+            });
+    
+        $.magnificPopup.open({
+            items: items,
             type: 'image',
             gallery: {
                 enabled: true
@@ -144,12 +153,11 @@ function updateSpecimenData(data) {
                         window.open(imageUrl, '_blank');
                     });
                     
-                    // downloads the current image
                     $('body').on('click', '.lightbox-download-btn', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
                         let imageUrl = $('.mfp-img').attr('src');
-                        let activeSlideIndex = data.image_urls.indexOf(imageUrl); 
+                        let activeSlideIndex = Array.from(placeholder.querySelectorAll('img')).findIndex(img => img.dataset.finalUrl === imageUrl || img.dataset.originalUrl === imageUrl); 
                         let filename = data.all_image_names[activeSlideIndex].replace('.aff', '') + ".jpg";
                         downloadImage(imageUrl, filename);
                     });
@@ -161,6 +169,7 @@ function updateSpecimenData(data) {
             }
         }, index);
     }
+    
     
     // download the current imager with the original filename intact 
     // will download the image as a jpg
@@ -181,10 +190,8 @@ function updateSpecimenData(data) {
     // will download the image as a jpg
     function downloadCurrentImage() {
         let activeSlide = $(placeholder).slick('slickCurrentSlide');
-        let currentImageUrl = data.image_urls[activeSlide];
-    
+        let currentImageUrl = Array.from(placeholder.querySelectorAll('img'))[activeSlide].dataset.finalUrl;
         let filename = data.all_image_names[activeSlide].replace('.aff', '') + ".jpg";
-    
         downloadImage(currentImageUrl, filename);
     }
     
@@ -201,7 +208,7 @@ function updateSpecimenData(data) {
     
         anchorElem.addEventListener('click', function(e) {
             e.preventDefault();
-            const index = data.image_urls.indexOf(url);
+            const index = Array.from(placeholder.querySelectorAll('img')).findIndex(img => img.dataset.finalUrl === url);
             openLightboxAt(index);
         });
     
@@ -209,12 +216,12 @@ function updateSpecimenData(data) {
         imgElem.alt = "Specimen image";
         imgElem.style.height = "550px";
         imgElem.src = url;
+        imgElem.dataset.finalUrl = url; 
         imgElem.onerror = function() { handleImageErrorWithAlterations(imgElem, url); };
     
         anchorElem.appendChild(imgElem);
         containerDiv.appendChild(anchorElem);
     
-
         if (hoverText && hoverText !== "None") {  
             let overlayDiv = document.createElement('div');
             overlayDiv.className = "image-overlay";
@@ -266,12 +273,12 @@ function updateSpecimenData(data) {
             placeholder.appendChild(downloadButton);
     
         // case of only one image
-        } else if (data.image_urls.length === 1) {
-            $(placeholder).find('.image-popup').on('click', function(e) {
-                e.preventDefault();
-                openLightboxAt(0);
-            });
-        }
+    } else if (data.image_urls.length === 1) {
+        $(placeholder).find('.image-popup').on('click', function(e) {
+            e.preventDefault();
+            openLightboxAt(0);
+        });
+    }
     
     // if a specimen doesn't have any images, it will destroy the existing carousel and clear the placeholder
     } else {
