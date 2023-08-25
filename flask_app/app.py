@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from flask import Flask, render_template, redirect, url_for, send_file, request, jsonify
+from flask import Flask, render_template, redirect, url_for, request, jsonify
 from flask_bootstrap import Bootstrap5
 from flask_wtf import FlaskForm, CSRFProtect
 from wtforms import StringField, SubmitField
@@ -343,11 +343,15 @@ def home():
     message = ""
 
     form = DonorForm()
-    if form.validate_on_submit(): 
-        donor_name = form.donor.data.upper()
+    if form.validate_on_submit():
+        donor_name = form.donor.data
 
         # gets the donor that matches the requested donor id
         donor = Donor.query.filter_by(name = donor_name).first()
+
+        if donor is None:
+            donor = Donor.query.filter_by(name = donor_name.upper()).first()
+
         if donor is not None:
             form.donor.data = ""
 
@@ -364,7 +368,7 @@ def home():
     return render_template('home.html', form=form, message=message, possible_donors=possible_donors)
 
 # builds the parent-child relationship between specimens 
-# generates dropdown menu with specimen metadata
+# generates dropdown menu with hierarchy built in through flattened data
 @app.route('/specimens/<donor_name>/')
 def specimens(donor_name):
 
